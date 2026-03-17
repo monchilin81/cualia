@@ -10,10 +10,10 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#F7F8FC;--surface:#FFFFFF;--s2:#F0F2F9;--s3:#E8EBF5;
-  --bd:#E2E6F0;--bd2:#C8CDE0;
-  --ac:#4F46E5;--ac-h:#4338CA;--ac-l:#EEF2FF;--ac-m:#C7D2FE;
-  --tx:#111827;--tx2:#6B7280;--tx3:#9CA3AF;
+  --bg:#ECEEF5;--surface:#F8F9FC;--s2:#E8EBF4;--s3:#DDE1EE;
+  --bd:#CDD2E6;--bd2:#B3BACD;
+  --ac:#4F46E5;--ac-h:#4338CA;--ac-l:#E8EBFF;--ac-m:#B8C0F8;
+  --tx:#0D1117;--tx2:#4A5568;--tx3:#8896B0;
   --ok:#059669;--ok-l:#D1FAE5;--ok-t:#065F46;
   --warn:#B45309;--warn-l:#FEF3C7;--warn-t:#92400E;
   --vio:#6D28D9;--vio-l:#EDE9FE;--vio-t:#4C1D95;
@@ -233,7 +233,7 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
   .founder-picks{grid-template-columns:1fr}
   .gap-12{gap:12px}
 }
-.daily-btn-wrap{text-align:center;padding:52px 0 44px}
+.daily-btn-wrap{text-align:center;padding:52px 0 44px;display:flex;justify-content:center}
 .daily-btn{display:inline-flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--bd);border-radius:14px;padding:16px 28px;font-family:var(--f);font-size:.95rem;font-weight:600;color:var(--tx);cursor:pointer;transition:all .2s}
 .daily-btn:hover{border-color:var(--ac);color:var(--ac);transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,70,229,.1)}
 .daily-btn .ico{font-size:1.3rem}
@@ -289,7 +289,6 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
       <div></div>
       <div class="hdr-r">
         <span class="hdr-cnt" id="hdrCnt"></span>
-        <button class="key-btn no-key" id="keyBtn" onclick="openKeyModal()">⚡ Activar IA</button>
         <a class="bmc-hdr" href="https://buymeacoffee.com/monchilin" target="_blank" rel="noopener">☕ Invítame a un café</a>
       </div>
     </div>
@@ -326,7 +325,7 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
 <section class="w founder-section">
   <div class="founder-wrap">
     <div class="founder-left">
-      <div class="founder-eyebrow">Stack del fundador</div>
+      <div class="founder-eyebrow">Stack de monchilin</div>
       <h2 class="founder-title">Lo que uso yo cada día</h2>
       <p class="founder-sub">No hay una IA que lo haga todo bien. Estas tres cubren el 90% de mis necesidades.</p>
     </div>
@@ -335,9 +334,9 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
         <div class="fpick-top">
           <span class="fpick-ico">✦</span>
           <span class="fpick-name">Claude</span>
-          <span class="fpick-badge">Principal</span>
+          <span class="fpick-badge">Para todo</span>
         </div>
-        <p class="fpick-desc">Para escribir, analizar, razonar y programar. El que más uso de lejos — documentos, código, ideas complejas.</p>
+        <p class="fpick-desc">Mi asistente principal para casi todo — escribir, analizar, programar, Excel, documentos, ideas. Si tengo que elegir una sola IA, es esta.</p>
       </a>
       <a href="https://perplexity.ai" target="_blank" rel="noopener" class="fpick">
         <div class="fpick-top">
@@ -345,15 +344,15 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
           <span class="fpick-name">Perplexity</span>
           <span class="fpick-badge">Búsqueda</span>
         </div>
-        <p class="fpick-desc">Ha reemplazado Google en mi día a día. Cada respuesta lleva las fuentes — no hay que adivinar si es verdad.</p>
+        <p class="fpick-desc">Ha reemplazado Google por completo. Cada respuesta lleva las fuentes — no hay que adivinar si es verdad.</p>
       </a>
       <a href="https://gemini.google.com" target="_blank" rel="noopener" class="fpick">
         <div class="fpick-top">
           <span class="fpick-ico">◈</span>
-          <span class="fpick-name">Gemini</span>
-          <span class="fpick-badge">Google</span>
+          <span class="fpick-name">Gemini + Grok</span>
+          <span class="fpick-badge">Imágenes</span>
         </div>
-        <p class="fpick-desc">Para todo lo que vive en Google Workspace — Gmail, Docs, Drive, Calendar. La integración marca la diferencia.</p>
+        <p class="fpick-desc">Para todo lo visual: explorar imágenes, afinar prompts y generarlas. Los uso en combinación — Gemini para analizar, Grok para crear.</p>
       </a>
     </div>
   </div>
@@ -552,29 +551,61 @@ const TOOL_CATALOG = TOOLS.map(t =>
   `[${t.id}] ${t.name} | ${t.cat} | ${t.free?'GRATIS':'De pago'} | ${t.desc}`
 ).join('\n');
 
-const AI_SYSTEM = `Eres un experto en herramientas de IA. El usuario describe una tarea y debes recomendar las mejores herramientas del catálogo siguiente.
+const AI_SYSTEM = `Eres un experto en herramientas de IA. El usuario describe una tarea y debes recomendar las mejores herramientas del catálogo.
 
-CATÁLOGO COMPLETO (usa EXACTAMENTE estos IDs):
+CATÁLOGO (usa EXACTAMENTE estos IDs):
 ${TOOL_CATALOG}
 
-INSTRUCCIONES:
-- Razona sobre la tarea del usuario: ¿qué necesita realmente? ¿cuál es su intención?
-- Distingue entre CREAR algo nuevo vs ANALIZAR datos existentes
-- Distingue entre usuario técnico vs no técnico si es relevante
-- Si la consulta es muy ambigua y la respuesta cambiaría completamente, pregunta UNA sola cosa
-- En general ve directo a recomendar: 3-5 herramientas ordenadas por relevancia real
-- El "why" debe explicar por qué ESA herramienta para ESA tarea específica (no su descripción genérica)
-- El "tip" debe ser un paso concreto y accionable que el usuario puede hacer hoy
+## REGLA PRINCIPAL: Claude primero
+Claude (id: "claude") es el mejor asistente general para la gran mayoría de tareas: escribir, analizar, razonar, código, Excel, documentos, PDFs, ideas. Cuando la tarea implique pensar, escribir o construir algo, Claude debe aparecer en el top 3 salvo que haya una herramienta claramente más especializada y superior para ese caso exacto.
 
-RESPONDE SOLO en JSON válido, sin markdown, sin backticks:
+Ejemplos donde Claude es #1 o #2:
+- Crear cualquier documento, informe, propuesta → claude #1
+- Crear Excel, fórmulas, scripts, macros → claude #1
+- Código y programación → claude #1 o claudecode #1
+- Analizar PDFs, resumir textos → claude #1
+- Emails, redacción → claude #1
+- Ideas, brainstorming → claude #1
 
-Si necesitas clarificación:
-{"type":"clarify","intro":"frase corta explicando por qué preguntas","questions":[{"id":"q1","text":"pregunta","multi":false,"options":[{"val":"v","label":"Opción"}]}]}
+## CUÁNDO PREGUNTAR POR PRESUPUESTO
+Si Claude es relevante para la tarea (casi siempre), pregunta primero si el usuario tiene plan gratuito o de pago, porque:
+- Claude gratis: limitado en mensajes diarios
+- Claude Pro (20€/mes): sin límites, subida de archivos, mejor para tareas intensivas
+Esta pregunta determina qué recomendar como principal vs alternativa.
 
-Si tienes suficiente información:
-{"type":"recommend","summary":"1-2 frases explicando el razonamiento","recommendations":[{"id":"tool_id","rank":1,"why":"por qué esta herramienta para esta tarea concreta","tip":"paso accionable específico"}]}
+Pregunta por presupuesto SIEMPRE que la tarea encaje con Claude, ChatGPT o Perplexity Pro.
 
-Responde siempre en el mismo idioma que el usuario.`;
+## HERRAMIENTAS — cuándo usarlas vs NO
+- julius/chatcsv: SOLO si el usuario dice "tengo datos", "mi Excel existente", "analizar mis datos"
+- notionai: SOLO si el usuario menciona que usa Notion
+- grammarly/quillbot: SOLO para corrección de inglés específicamente
+- jasper/copyai/surferseo: SOLO para marketing profesional o SEO
+- bolt/lovable: SOLO si no sabe programar y quiere una app web completa
+- v0: SOLO para componentes UI aislados en React
+- cursor/windsurf: SOLO si ya tiene un proyecto de código existente
+- n8n/make/zapier: SOLO para automatización de flujos entre apps
+NO recomiendes herramientas de nicho técnico cuando Claude o ChatGPT pueden hacer lo mismo más fácil.
+
+## MÁXIMO 3 RECOMENDACIONES
+Recomienda 3 herramientas como máximo. Calidad sobre cantidad.
+
+## CUÁNDO CLARIFICAR
+Pregunta UNA sola cosa solo si la respuesta cambiaría completamente la recomendación:
+- ¿Tiene plan de pago o solo gratis? (si Claude/ChatGPT son relevantes)
+- ¿Sabe programar? (si la tarea es "hacer una web/app")
+- ¿Tiene los datos ya o quiere crearlos desde cero? (solo si no está claro)
+
+NO preguntes por el ecosistema (Google/Microsoft) — es demasiado restrictivo.
+
+## FORMATO (JSON válido, sin markdown, sin backticks)
+
+Para clarificar:
+{"type":"clarify","intro":"frase corta","questions":[{"id":"q1","text":"pregunta","multi":false,"options":[{"val":"v","label":"Opción"}]}]}
+
+Para recomendar:
+{"type":"recommend","summary":"1-2 frases de razonamiento","recommendations":[{"id":"tool_id","rank":1,"why":"por qué esta herramienta para esta tarea concreta","tip":"paso accionable específico hoy"}]}
+
+Responde en el mismo idioma que el usuario.`;
 
 async function callAI(query, forceRecommend = false) {
   const userMsg = forceRecommend
@@ -855,22 +886,34 @@ const RULES = [
       {id:'framer',    rank:3, why:'Para prototipar el diseño visualmente antes de pasar a código.', tip:'Crea el prototipo en Framer y usa el panel de código para exportar a React.'},
     ]}},
 
-  // ── EXCEL — CREAR desde cero ────────────────────────────────────────────────
-  // Por defecto, si alguien menciona Excel sin decir "mis datos / tengo un excel",
-  // quiere CREAR algo, no analizar datos existentes.
+  // ── EXCEL — CREAR desde cero → pregunta presupuesto primero
   { match: q => has(q,'excel','spreadsheet','hoja de calculo') && !isAnalyzing(q),
-    result: { type:'recommend', summary:'Para crear Excels desde cero, Claude es la mejor opción — genera estructura, fórmulas, macros y formato completo de una sola vez.', recommendations:[
-      {id:'claude',  rank:1, why:'Genera el Excel completo desde una descripción: hojas, fórmulas, formato condicional, tablas dinámicas, incluso VBA. Mucho más rápido que hacerlo a mano y sin errores.', tip:'Dile exactamente qué necesitas: "Crea un Excel para finanzas personales con: hoja de ingresos/gastos por categoría, hoja resumen mensual, gráfico de evolución y formato condicional para gastos que superen el presupuesto".'},
-      {id:'chatgpt', rank:2, why:'Con el Code Interpreter genera el fichero .xlsx directamente y puedes descargarlo. Útil si quieres el fichero listo sin copiar fórmulas.', tip:'Pídele que lo genere: "Crea un Excel de presupuesto mensual y descárgalo como .xlsx". Necesitas ChatGPT Plus.'},
-      {id:'julius',  rank:3, why:'Si además de crearlo quieres conectar datos y generar dashboards visuales automáticamente.', tip:'Sube el Excel que hayas creado con Claude → pídele a Julius que genere los gráficos y el análisis visual.'},
+    result: { type:'clarify', intro:'Claude puede crear el Excel completo por ti. ¿Qué plan tienes?', questions:[
+      { id:'plan', text:'¿Usas Claude o ChatGPT de pago?', multi:false, options:[
+        {val:'pago',   label:'Sí, tengo plan de pago (Claude Pro / ChatGPT Plus)'},
+        {val:'gratis', label:'No, solo uso planes gratuitos'},
+      ]}
+    ]}},
+
+  // ── EXCEL — plan pago → Claude directo
+  { match: q => has(q,'excel','spreadsheet','hoja de calculo') && has(q,'pago','pro','plus','claude pro','chatgpt plus') && !isAnalyzing(q),
+    result: { type:'recommend', summary:'Con Claude Pro puedes crear Excels completos en segundos — fórmulas, hojas, formato y macros de una sola vez.', recommendations:[
+      {id:'claude',  rank:1, why:'Genera el Excel completo desde tu descripción: estructura de hojas, fórmulas complejas, formato condicional, incluso VBA. El plan Pro te permite subir el fichero para revisarlo directamente.', tip:'Dile exactamente qué necesitas: "Crea un Excel de finanzas mensuales con: hoja de ingresos/gastos por categoría, hoja resumen, gráfico de evolución y alertas de color si supero el presupuesto".'},
+      {id:'chatgpt', rank:2, why:'Con ChatGPT Plus, el Code Interpreter genera el fichero .xlsx y puedes descargarlo directamente.', tip:'Pídele que lo genere como archivo: "Crea un Excel de [X] y descárgalo como .xlsx".'},
+    ]}},
+
+  // ── EXCEL — plan gratis → Claude + alternativas
+  { match: q => has(q,'excel','spreadsheet','hoja de calculo') && has(q,'gratis','free','sin pagar','plan gratuito') && !isAnalyzing(q),
+    result: { type:'recommend', summary:'Claude gratis tiene límite diario pero es suficiente para crear un Excel. Con las fórmulas que te dé, lo construyes tú en segundos.', recommendations:[
+      {id:'claude',  rank:1, why:'Aunque el plan gratis tiene límites diarios, genera las fórmulas, estructura y VBA perfectamente. Copia y pega en tu Excel.', tip:'"Dame la fórmula completa para un Excel de finanzas mensuales: columnas, fórmulas de suma/categorías, formato condicional para gastos altos".'},
+      {id:'chatgpt', rank:2, why:'GPT-4o mini (gratis) también escribe fórmulas y estructuras de Excel muy bien. Alternativa si Claude llega al límite.', tip:'Mismo enfoque: pídele la estructura completa y cópiala en tu Excel.'},
     ]}},
 
   // ── EXCEL — ANALIZAR datos existentes ────────────────────────────────────────
   { match: q => has(q,'excel','spreadsheet','hoja de calculo','csv','datos en excel','analizar datos','mis datos','graficos','dashboard de datos','sql','base de datos') && isAnalyzing(q),
     result: { type:'recommend', summary:'Para analizar datos con IA, Julius AI es el más directo — chatea con tu Excel sin fórmulas.', recommendations:[
-      {id:'julius',  rank:1, why:'Sube tu Excel o CSV y hazle preguntas en español. Genera gráficos y análisis automáticamente sin escribir fórmulas.', tip:'Sube tu fichero → pregunta "¿Cuál es el producto más vendido por mes?" → te devuelve el gráfico listo.'},
-      {id:'chatgpt', rank:2, why:'El code interpreter de ChatGPT Plus analiza ficheros, crea gráficos y escribe fórmulas complejas.', tip:'Sube tu Excel → pídele "crea un dashboard con las métricas principales" → exporta como imagen.'},
-      {id:'claude',  rank:3, why:'Para entender patrones complejos y escribir fórmulas o scripts de Python/R para análisis avanzado.', tip:'Pega unas filas de ejemplo y dile qué quieres calcular — escribirá la fórmula exacta para tu caso.'},
+      {id:'julius',  rank:1, why:'Sube tu Excel o CSV y hazle preguntas en español. Genera gráficos y análisis automáticamente.', tip:'Sube tu fichero → pregunta "¿Cuál es el producto más vendido por mes?" → te devuelve el gráfico listo.'},
+      {id:'claude',  rank:2, why:'Para entender patrones complejos, escribir fórmulas avanzadas o analizar texto dentro del Excel.', tip:'Pega unas filas de ejemplo y dile qué quieres calcular — escribe la fórmula exacta para tu caso.'},
     ]}},
 
   // ── CREAR DOCUMENTO / INFORME / PROPUESTA ────────────────────────────────────
