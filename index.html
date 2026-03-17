@@ -10,13 +10,13 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#ECEEF5;--surface:#F8F9FC;--s2:#E8EBF4;--s3:#DDE1EE;
-  --bd:#CDD2E6;--bd2:#B3BACD;
-  --ac:#4F46E5;--ac-h:#4338CA;--ac-l:#E8EBFF;--ac-m:#B8C0F8;
-  --tx:#0D1117;--tx2:#4A5568;--tx3:#8896B0;
+  --bg:#F5F5F7;--surface:#FFFFFF;--s2:#F2F2F4;--s3:#E8E8ED;
+  --bd:#D2D2D7;--bd2:#B8B8BF;
+  --ac:#3D4A6B;--ac-h:#2D3857;--ac-l:#EBEDF5;--ac-m:#8E9BC0;
+  --tx:#1D1D1F;--tx2:#515154;--tx3:#86868B;
   --ok:#059669;--ok-l:#D1FAE5;--ok-t:#065F46;
   --warn:#B45309;--warn-l:#FEF3C7;--warn-t:#92400E;
-  --vio:#6D28D9;--vio-l:#EDE9FE;--vio-t:#4C1D95;
+  --vio:#4A5580;--vio-l:#EBEDF5;--vio-t:#2D3857;
   --r:14px;--rs:10px;
   --f:'Plus Jakarta Sans',sans-serif;
 }
@@ -214,7 +214,11 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
 .foot-bmc{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:500;color:var(--tx2);border:1px solid var(--bd);border-radius:20px;padding:6px 14px;transition:all .15s}
 .foot-bmc:hover{border-color:var(--ac);color:var(--ac)}
 
-/* ─── FOUNDER PICKS ─────────────────────────────────────────────────────── */
+/* ─── TYPING ANIMATION ───────────────────────────────────────────────────── */
+.hero-cta{cursor:pointer;white-space:nowrap}
+.hero-cta:hover{opacity:.8}
+.cursor-blink{animation:blink-cur .75s step-end infinite;color:var(--ac);font-weight:300}
+@keyframes blink-cur{0%,100%{opacity:1}50%{opacity:0}}
 .founder-section{padding:52px 0 48px}
 .founder-wrap{display:grid;grid-template-columns:1fr 2fr;gap:48px;align-items:start}
 .founder-eyebrow{font-size:.68rem;font-weight:600;color:var(--ac);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
@@ -297,7 +301,8 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
 
 <section class="hero">
   <div class="w">
-    <h1>¿Qué IA necesito<br>para <span class="ac">esto?</span></h1>
+    <h1>¿Qué IA necesito<br>para <span class="ac hero-cta" onclick="focusSearch()" title="Haz clic y escribe tu tarea">
+      <span id="typingText"></span><span class="cursor-blink">|</span></span></h1>
     <p class="hero-sub">Describe lo que quieres hacer y te decimos exactamente qué IA usar, por qué, y cómo.</p>
     <div class="sbox">
       <textarea id="q" placeholder="ej: quiero transcribir una reunión y generar un resumen automático..." rows="3"></textarea>
@@ -359,6 +364,9 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
 </section>
 
 <hr class="div">
+
+<section class="w">
+  <div class="daily-btn-wrap">
     <button class="daily-btn" onclick="openDailyWiz()">
       <span class="ico">✦</span>
       <span>
@@ -371,6 +379,8 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
 </section>
 
 <hr class="div">
+
+<section class="dir">
   <div class="w">
     <div class="dir-head">
       <div>
@@ -1635,6 +1645,36 @@ renderPills();
 renderStats();
 renderFilters();
 renderDir();
+
+// ── Typing animation ──────────────────────────────────────────────────────────
+function focusSearch() {
+  const q = document.getElementById('q');
+  q.focus();
+  q.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+(function typeLoop() {
+  const words = ['esto?','código?','imágenes?','presentaciones?','música?','un Excel?','una web?','vídeos?','automatizar?','buscar info?'];
+  const el = document.getElementById('typingText');
+  if (!el) return;
+  let wi = 0, ci = 0, deleting = false, pause = 0;
+
+  function tick() {
+    const word = words[wi];
+    if (pause > 0) { pause--; setTimeout(tick, 60); return; }
+
+    if (!deleting) {
+      el.textContent = word.slice(0, ++ci);
+      if (ci === word.length) { deleting = true; pause = 28; }
+      setTimeout(tick, 95);
+    } else {
+      el.textContent = word.slice(0, --ci);
+      if (ci === 0) { deleting = false; wi = (wi + 1) % words.length; pause = 6; }
+      setTimeout(tick, 48);
+    }
+  }
+  tick();
+})();
 </script>
 </body>
 </html>
