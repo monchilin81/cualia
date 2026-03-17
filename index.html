@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Qué IA necesito?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F8FC;--surface:#FFFFFF;--s2:#F0F2F9;--s3:#E8EBF5;
+  --bd:#E2E6F0;--bd2:#C8CDE0;
+  --ac:#4F46E5;--ac-h:#4338CA;--ac-l:#EEF2FF;--ac-m:#C7D2FE;
+  --tx:#111827;--tx2:#6B7280;--tx3:#9CA3AF;
+  --ok:#059669;--ok-l:#D1FAE5;--ok-t:#065F46;
+  --warn:#B45309;--warn-l:#FEF3C7;--warn-t:#92400E;
+  --vio:#6D28D9;--vio-l:#EDE9FE;--vio-t:#4C1D95;
+  --r:14px;--rs:10px;
+  --f:'Plus Jakarta Sans',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--f);background:var(--bg);color:var(--tx);min-height:100vh;font-size:16px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+.w{max-width:1080px;margin:0 auto;padding:0 28px}
+
+/* ─── HEADER ─── */
+header{background:var(--surface);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:200}
+.hdr{display:flex;align-items:center;justify-content:space-between;height:62px}
+.logo{font-weight:700;font-size:1.2rem;letter-spacing:-.3px;color:var(--tx)}
+.logo span{color:var(--ac)}
+.hdr-r{display:flex;align-items:center;gap:14px}
+.hdr-cnt{font-size:.75rem;font-weight:400;color:var(--tx3);white-space:nowrap}
+.bmc-hdr{display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:500;color:var(--tx2);border:1px solid var(--bd);border-radius:20px;padding:6px 14px;transition:all .15s}
+.bmc-hdr:hover{border-color:var(--ac);color:var(--ac)}
+
+/* ─── HERO ─── */
+.hero{padding:88px 0 64px;text-align:center}
+.hero h1{font-weight:700;font-size:clamp(2.2rem,5.5vw,3.8rem);line-height:1.15;letter-spacing:-.8px;margin-bottom:18px;color:var(--tx)}
+.hero h1 .ac{color:var(--ac)}
+.hero-sub{color:var(--tx2);font-size:1.05rem;font-weight:400;max-width:420px;margin:0 auto 44px;line-height:1.8}
+
+/* ─── SEARCH ─── */
+.sbox{max-width:620px;margin:0 auto}
+textarea#q{width:100%;padding:16px 20px;border:1.5px solid var(--bd);border-radius:var(--r);background:var(--surface);font-family:var(--f);font-size:1rem;color:var(--tx);resize:none;outline:none;transition:border-color .2s,box-shadow .2s;min-height:86px;display:block;line-height:1.7}
+textarea#q:focus{border-color:var(--ac);box-shadow:0 0 0 4px rgba(79,70,229,.08)}
+textarea#q::placeholder{color:var(--tx3)}
+#findBtn{margin-top:10px;width:100%;background:var(--ac);color:#fff;border:none;border-radius:var(--rs);padding:15px 24px;font-family:var(--f);font-weight:600;font-size:1rem;cursor:pointer;transition:background .15s,transform .1s;letter-spacing:0}
+#findBtn:hover{background:var(--ac-h)}
+#findBtn:active{transform:scale(.99)}
+#findBtn:disabled{opacity:.35;cursor:not-allowed}
+.pills{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:18px}
+.pill{font-size:.78rem;font-weight:400;color:var(--tx2);border:1px solid var(--bd);border-radius:20px;padding:5px 13px;cursor:pointer;background:var(--surface);transition:all .15s}
+.pill:hover{border-color:var(--ac);color:var(--ac);background:var(--ac-l)}
+
+/* ─── LOADING ─── */
+#loading{display:none;max-width:620px;margin:36px auto}
+#loading.on{display:block}
+.prog-track{background:var(--bd);border-radius:999px;height:3px;overflow:hidden;margin-bottom:16px}
+.prog-fill{height:100%;background:var(--ac);border-radius:999px;width:0%;transition:width .55s cubic-bezier(.4,0,.2,1)}
+.prog-stages{display:flex;align-items:center;justify-content:center;gap:10px}
+.prog-dot{width:6px;height:6px;border-radius:50%;background:var(--ac-m);animation:pdot 1.4s ease-in-out infinite}
+.prog-dot:nth-child(2){animation-delay:.18s}
+.prog-dot:nth-child(3){animation-delay:.36s}
+@keyframes pdot{0%,100%{transform:scale(.6);opacity:.3}50%{transform:scale(1);opacity:1}}
+.prog-label{font-size:.78rem;font-weight:400;color:var(--tx3)}
+
+/* ─── ERROR ─── */
+.errbox{display:none;max-width:620px;margin:14px auto;background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--rs);padding:14px 18px;font-size:.875rem;color:#B91C1C}
+.errbox.on{display:block}
+
+/* ─── CLARIFY ─── */
+#clarify{display:none;max-width:620px;margin:40px auto 0}
+#clarify.on{display:block}
+.cl-intro{font-size:.9rem;color:var(--tx2);line-height:1.75;padding:16px 20px;background:var(--surface);border:1px solid var(--bd);border-left:3px solid var(--ac);border-radius:var(--r);margin-bottom:24px}
+.cl-q{margin-bottom:22px}
+.cl-q-txt{font-weight:600;font-size:.95rem;margin-bottom:12px;color:var(--tx)}
+.cl-opts{display:flex;flex-wrap:wrap;gap:8px}
+.cl-opt{padding:8px 16px;border:1px solid var(--bd);border-radius:20px;cursor:pointer;font-size:.82rem;background:var(--surface);color:var(--tx2);transition:all .15s;user-select:none}
+.cl-opt:hover{border-color:var(--ac);color:var(--ac)}
+.cl-opt.sel{border-color:var(--ac);background:var(--ac-l);color:var(--ac);font-weight:500}
+#clBtn{margin-top:20px;width:100%;background:var(--ac);color:#fff;border:none;border-radius:var(--rs);padding:14px;font-family:var(--f);font-weight:600;font-size:.95rem;cursor:pointer;transition:background .15s}
+#clBtn:hover{background:var(--ac-h)}
+
+/* ─── RESULTS ─── */
+#results{display:none;max-width:760px;margin:48px auto 0}
+#results.on{display:block}
+.res-header{margin-bottom:18px}
+.res-tag{font-size:.7rem;font-weight:600;color:var(--ac);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.res-q{font-size:1.05rem;font-weight:500;color:var(--tx);line-height:1.5}
+.res-q em{color:var(--ac);font-style:normal}
+.res-sum{font-size:.9rem;color:var(--tx2);line-height:1.75;padding:16px 20px;background:var(--surface);border:1px solid var(--bd);border-left:3px solid var(--ac);border-radius:var(--rs);margin-bottom:28px}
+.recs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rec{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);padding:24px;display:block;transition:border-color .2s,transform .15s,box-shadow .15s;cursor:pointer;color:inherit;text-decoration:none}
+.rec:hover{border-color:var(--ac-m);transform:translateY(-2px);box-shadow:0 8px 28px rgba(79,70,229,.08)}
+.rec.top{grid-column:1/-1;border-color:var(--ac);background:var(--ac-l)}
+.rec-badge{font-size:.65rem;font-weight:600;color:var(--ac);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.rec-badge .star{background:var(--ac);color:#fff;border-radius:5px;padding:3px 8px;font-size:.63rem;font-weight:600}
+.rec-head{display:flex;align-items:center;gap:13px;margin-bottom:12px}
+.rec-ico{width:46px;height:46px;background:var(--surface);border:1px solid var(--bd);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.rec.top .rec-ico{background:rgba(255,255,255,.7)}
+.rec-name{font-weight:700;font-size:1.15rem;letter-spacing:-.2px}
+.rec-cat{font-size:.72rem;color:var(--tx3);margin-top:2px;font-weight:400}
+.rec-why{font-size:.875rem;color:var(--tx2);line-height:1.7;margin-bottom:13px}
+.rec-tip{font-size:.82rem;background:rgba(255,255,255,.7);color:var(--ac-h);border-radius:8px;padding:10px 14px;line-height:1.6;margin-bottom:12px;border:1px solid var(--ac-m)}
+.rec.top .rec-tip{background:rgba(255,255,255,.6)}
+.rec-pricing{display:flex;gap:6px;flex-wrap:wrap}
+.bdg{font-size:.67rem;font-weight:500;padding:3px 9px;border-radius:5px;white-space:nowrap}
+.bdg.free{background:var(--ok-l);color:var(--ok-t)}
+.bdg.paid{background:var(--warn-l);color:var(--warn-t)}
+.bdg.stu{background:var(--vio-l);color:var(--vio-t)}
+.new-q{display:block;margin:28px auto 0;background:transparent;border:1px solid var(--bd);border-radius:var(--rs);padding:10px 22px;font-size:.85rem;font-family:var(--f);color:var(--tx2);cursor:pointer;transition:all .15s}
+.new-q:hover{border-color:var(--ac);color:var(--ac)}
+
+/* ─── DIRECTORY ─── */
+hr.div{border:none;border-top:1px solid var(--bd)}
+.dir{padding:64px 0 56px}
+.dir-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:14px}
+.dir-title{font-weight:700;font-size:1.65rem;letter-spacing:-.4px}
+.dir-sub{font-size:.78rem;color:var(--tx3);margin-top:4px}
+.stats{display:flex;background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:28px}
+.stat{flex:1;text-align:center;padding:20px 12px;border-right:1px solid var(--bd)}
+.stat:last-child{border-right:none}
+.stat-n{font-weight:700;font-size:1.65rem;color:var(--ac);line-height:1;letter-spacing:-.5px}
+.stat-l{font-size:.72rem;color:var(--tx3);margin-top:5px;font-weight:400}
+.filter-wrap{overflow-x:auto;margin-bottom:28px;-webkit-overflow-scrolling:touch}
+.filter-wrap::-webkit-scrollbar{height:3px}
+.filter-wrap::-webkit-scrollbar-track{background:transparent}
+.filter-wrap::-webkit-scrollbar-thumb{background:var(--bd)}
+.ftabs{display:flex;gap:7px;white-space:nowrap;padding-bottom:4px}
+.ftab{padding:7px 16px;border:1px solid var(--bd);border-radius:20px;background:var(--surface);font-size:.8rem;font-weight:400;color:var(--tx2);cursor:pointer;transition:all .15s;white-space:nowrap;font-family:var(--f)}
+.ftab:hover{border-color:var(--ac);color:var(--ac)}
+.ftab.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:500}
+.cat-block{margin-bottom:40px}
+.cat-block.hidden{display:none}
+.cat-lbl{font-size:.68rem;font-weight:600;color:var(--tx3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.cat-lbl::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:10px}
+.tcard{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);padding:16px;display:block;transition:all .18s;position:relative;text-decoration:none;color:inherit}
+.tcard:hover{border-color:var(--bd2);transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.07)}
+.tcard.csel{border-color:var(--ac);background:var(--ac-l)}
+.tchk{position:absolute;top:10px;right:10px;width:18px;height:18px;border:1px solid var(--bd);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;background:var(--surface);transition:all .15s;cursor:pointer;z-index:2}
+.tcard.csel .tchk{border-color:var(--ac);background:var(--ac);color:#fff}
+.th{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.te{font-size:1.15rem}
+.tn{font-weight:600;font-size:.875rem;padding-right:22px;line-height:1.3}
+.td{font-size:.775rem;color:var(--tx2);line-height:1.55;margin-bottom:9px}
+.tbdgs{display:flex;gap:5px;flex-wrap:wrap}
+.tbdg{font-size:.63rem;font-weight:500;padding:3px 7px;border-radius:4px}
+.tbdg.free{background:var(--ok-l);color:var(--ok-t)}
+.tbdg.paid{background:var(--warn-l);color:var(--warn-t)}
+.tbdg.stu{background:var(--vio-l);color:var(--vio-t)}
+
+/* ─── COMPARE BAR ─── */
+#cbar{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--tx);color:#fff;border-radius:var(--r);padding:14px 20px;align-items:center;gap:16px;box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:300;min-width:300px}
+#cbar.on{display:flex}
+.cbar-info{font-size:.82rem;opacity:.65;flex:1}
+#cbtn{background:var(--ac);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-family:var(--f);font-weight:600;font-size:.82rem;cursor:pointer;white-space:nowrap;transition:background .15s}
+#cbtn:hover{background:var(--ac-h)}
+#cclear{background:transparent;color:rgba(255,255,255,.4);border:none;cursor:pointer;font-size:.9rem;padding:0;line-height:1}
+
+/* ─── COMPARE MODAL ─── */
+#cmod{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:400;overflow-y:auto;padding:40px 20px;align-items:flex-start;justify-content:center}
+#cmod.on{display:flex}
+.cmod-in{background:var(--surface);border-radius:18px;width:100%;max-width:800px;padding:32px;position:relative}
+.cmod-x{position:absolute;top:16px;right:16px;background:var(--s2);border:none;border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;color:var(--tx2)}
+.cmod-title{font-weight:700;font-size:1.2rem;letter-spacing:-.2px;margin-bottom:22px}
+.cmod-heads{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.cmod-th{background:var(--s2);border-radius:var(--rs);padding:16px;display:flex;align-items:center;gap:12px}
+.cmod-te{font-size:1.5rem}
+.cmod-tn{font-weight:700;font-size:1rem}
+.cmod-tc{font-size:.72rem;color:var(--tx3);margin-top:3px}
+.cmod-body{font-size:.875rem;color:var(--tx2);line-height:1.75}
+.cmod-loading{text-align:center;padding:48px;font-size:.8rem;color:var(--tx3)}
+.cmod-section{margin-bottom:20px}
+.cmod-section h4{font-size:.7rem;font-weight:600;color:var(--tx3);letter-spacing:.6px;text-transform:uppercase;margin-bottom:12px}
+.cmod-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cmod-cell{background:var(--s2);border-radius:var(--rs);padding:14px;font-size:.875rem;color:var(--tx2);line-height:1.65}
+.cmod-cell strong{color:var(--tx);font-weight:600;display:block;margin-bottom:5px;font-size:.82rem}
+.cmod-verdict{background:var(--ac-l);border:1px solid var(--ac-m);border-radius:var(--rs);padding:16px;font-size:.9rem;color:var(--ac-h);line-height:1.75;margin-bottom:22px}
+
+/* ─── FOOTER ─── */
+footer{border-top:1px solid var(--bd);padding:28px 0}
+.foot-in{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap}
+.foot-txt{font-size:.78rem;color:var(--tx3)}
+.foot-by{font-size:.78rem;color:var(--tx2)}
+.foot-bmc{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:500;color:var(--tx2);border:1px solid var(--bd);border-radius:20px;padding:6px 14px;transition:all .15s}
+.foot-bmc:hover{border-color:var(--ac);color:var(--ac)}
+
+/* ─── DAILY AI ──────────────────────────────────────────────────────────── */
+.daily-btn-wrap{text-align:center;padding:52px 0 44px}
+.daily-btn{display:inline-flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--bd);border-radius:14px;padding:16px 28px;font-family:var(--f);font-size:.95rem;font-weight:600;color:var(--tx);cursor:pointer;transition:all .2s}
+.daily-btn:hover{border-color:var(--ac);color:var(--ac);transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,70,229,.1)}
+.daily-btn .ico{font-size:1.3rem}
+.daily-btn .sub{font-size:.75rem;font-weight:400;color:var(--tx3);display:block;margin-top:1px}
+
+#dailyWiz{display:none;max-width:580px;margin:0 auto;padding-bottom:48px}
+#dailyWiz.on{display:block}
+.wiz-step{display:none}
+.wiz-step.on{display:block}
+.wiz-q{font-weight:600;font-size:1rem;color:var(--tx);margin-bottom:14px;line-height:1.5}
+.wiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+.wiz-opt{display:flex;align-items:center;gap:12px;padding:13px 16px;border:1.5px solid var(--bd);border-radius:var(--rs);cursor:pointer;background:var(--surface);transition:all .15s;text-align:left}
+.wiz-opt:hover{border-color:var(--ac-m)}
+.wiz-opt.sel{border-color:var(--ac);background:var(--ac-l)}
+.wiz-opt-ico{font-size:1.2rem;flex-shrink:0}
+.wiz-opt-txt{font-size:.9rem;font-weight:500;color:var(--tx)}
+.wiz-opt-sub{font-size:.76rem;color:var(--tx3);margin-top:1px}
+.wiz-nav{display:flex;justify-content:space-between;align-items:center}
+.wiz-back{background:transparent;border:1px solid var(--bd);border-radius:var(--rs);padding:9px 18px;font-family:var(--f);font-size:.82rem;color:var(--tx2);cursor:pointer;transition:all .15s}
+.wiz-back:hover{border-color:var(--ac);color:var(--ac)}
+.wiz-next{background:var(--ac);color:#fff;border:none;border-radius:var(--rs);padding:10px 22px;font-family:var(--f);font-weight:600;font-size:.88rem;cursor:pointer;transition:background .15s}
+.wiz-next:hover{background:var(--ac-h)}
+.wiz-next:disabled{opacity:.3;cursor:not-allowed}
+.wiz-prog{display:flex;gap:5px;margin-bottom:24px}
+.wiz-dot{height:3px;flex:1;background:var(--bd);border-radius:2px;transition:background .3s}
+.wiz-dot.done{background:var(--ac)}
+
+.stack-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}
+.stack-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);padding:18px;text-decoration:none;color:inherit;display:block;transition:all .15s}
+.stack-card:hover{border-color:var(--ac-m);transform:translateY(-1px)}
+.stack-role{font-size:.65rem;font-weight:600;color:var(--ac);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.stack-head{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.stack-ico{font-size:1.25rem}
+.stack-name{font-weight:700;font-size:1rem}
+.stack-use{font-size:.82rem;color:var(--tx2);line-height:1.6}
+.wiz-restart{display:block;margin:0 auto;background:transparent;border:1px solid var(--bd);border-radius:var(--rs);padding:9px 20px;font-size:.82rem;font-family:var(--f);color:var(--tx2);cursor:pointer;transition:all .15s}
+.wiz-restart:hover{border-color:var(--ac);color:var(--ac)}
+@media(max-width:600px){
+  .recs{grid-template-columns:1fr}
+  .rec.top{grid-column:auto}
+  .cmod-heads,.cmod-grid{grid-template-columns:1fr}
+  .stats{flex-wrap:wrap}
+  .stat{flex:0 0 50%;border-bottom:1px solid var(--bd)}
+  .hero{padding:56px 0 44px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="w">
+    <div class="hdr">
+      <div></div>
+      <div class="hdr-r">
+        <span class="hdr-cnt" id="hdrCnt"></span>
+        <a class="bmc-hdr" href="https://buymeacoffee.com/monchilin" target="_blank" rel="noopener">☕ Invítame a un café</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="w">
+    <h1>¿Qué IA necesito<br>para <span class="ac">esto?</span></h1>
+    <p class="hero-sub">Describe lo que quieres hacer y te decimos exactamente qué IA usar, por qué, y cómo.</p>
+    <div class="sbox">
+      <textarea id="q" placeholder="ej: quiero transcribir una reunión y generar un resumen automático..." rows="3"></textarea>
+      <button id="findBtn">Encontrar la IA perfecta →</button>
+    </div>
+    <div class="pills" id="pills"></div>
+  </div>
+</section>
+
+<div class="w">
+  <div id="loading">
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-stages">
+      <div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div>
+      <span class="prog-label" id="progLbl">Analizando tu consulta...</span>
+    </div>
+  </div>
+  <div class="errbox" id="err"></div>
+  <div id="clarify"></div>
+  <div id="results"></div>
+</div>
+
+<hr class="div">
+
+<section class="w">
+  <div class="daily-btn-wrap">
+    <button class="daily-btn" onclick="openDailyWiz()">
+      <span class="ico">✦</span>
+      <span>
+        ¿Cuáles son las IAs que debería usar cada día?
+        <span class="sub">Responde 4 preguntas rápidas y te armamos tu stack personal</span>
+      </span>
+    </button>
+  </div>
+  <div id="dailyWiz"></div>
+</section>
+
+<hr class="div">
+  <div class="w">
+    <div class="dir-head">
+      <div>
+        <h2 class="dir-title">Directorio completo</h2>
+        <div class="dir-sub" id="dirSub"></div>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="filter-wrap"><div class="ftabs" id="ftabs"></div></div>
+    <div id="dirContent"></div>
+  </div>
+</section>
+
+<div id="cbar">
+  <div class="cbar-info" id="cbarInfo">Selecciona 2 herramientas para comparar</div>
+  <button id="cbtn">Comparar ▸</button>
+  <button id="cclear">✕</button>
+</div>
+
+<div id="cmod">
+  <div class="cmod-in">
+    <button class="cmod-x" id="cmodX">✕</button>
+    <div id="cmodContent"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="w">
+    <div class="foot-in">
+      <span class="foot-txt">Encuentra la IA perfecta para cada tarea</span>
+      <span class="foot-txt">·</span>
+      <span class="foot-by">Hecho con ❤ por <strong>monchilin</strong></span>
+      <a class="foot-bmc" href="https://buymeacoffee.com/monchilin" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ────────────────────────────────────────────────────────────────────────────
+// DATA
+// Fields: id, name, emoji, cat, url, desc, free, freeTier, paid, student
+// student: true = descuento/plan gratuito verificado para estudiantes
+// ────────────────────────────────────────────────────────────────────────────
+const RAW = [
+// ── Búsqueda e Investigación ─────────────────────────────────────────────
+["perplexity","Perplexity","🔍","Búsqueda","https://perplexity.ai","Búsquedas en tiempo real con fuentes citadas y verificadas. El Google mejorado con IA.",true,"Básico ilimitado, 5 Pro/día","Pro: $20/mes",false],
+["youcom","You.com","🌐","Búsqueda","https://you.com","Motor de búsqueda con IA, modo privado y múltiples modelos integrados.",true,"Gratis con límites","YouPro: $15/mes",false],
+["consensus","Consensus","📊","Búsqueda","https://consensus.app","Sintetiza resultados de papers científicos. Ideal para investigación académica.",true,"10 búsquedas/mes","Premium: $9.99/mes",false],
+["elicit","Elicit","🔬","Búsqueda","https://elicit.org","Extrae datos, resume y organiza papers automáticamente. Ahorra horas de lectura.",true,"Créditos limitados/mes","Plus: $10/mes",false],
+["notebooklm","NotebookLM","📓","Búsqueda","https://notebooklm.google.com","Sube documentos y genera resúmenes, preguntas y podcasts de audio (Google). Imprescindible.",true,"Gratis con cuenta Google","Incluido en Google One AI Premium",false],
+// ── Asistentes Generales ─────────────────────────────────────────────────
+["chatgpt","ChatGPT","⬡","Asistentes Generales","https://chat.openai.com","El asistente IA más extendido. Web browsing, análisis de datos, imágenes y code interpreter.",true,"GPT-4o mini ilimitado","Plus: $20/mes (GPT-4o)",false],
+["claude","Claude","✦","Asistentes Generales","https://claude.ai","El mejor para escritura larga, análisis complejo, documentos y código. Contexto enorme.",true,"Limitado diario","Pro: $20/mes",false],
+["gemini","Gemini","◈","Asistentes Generales","https://gemini.google.com","IA de Google con acceso a Gmail, Docs, Drive y búsqueda en tiempo real integrada.",true,"Gemini 2.0 Flash gratis","Advanced: $19.99/mes",false],
+["grok","Grok","𝕏","Asistentes Generales","https://grok.com","IA de xAI con acceso en tiempo real a X/Twitter. Respuestas directas y sin filtros.",true,"Gratis limitado","Con X Premium: desde $8/mes",false],
+["mistral","Mistral","🌪","Asistentes Generales","https://chat.mistral.ai","Modelos europeos eficientes. Excelente para código, privacidad y open source.",true,"Le Chat gratis","Pro: $14.99/mes",false],
+["copilot","MS Copilot","🪟","Asistentes Generales","https://copilot.microsoft.com","IA de Microsoft integrada en Windows, Edge, Word, Excel y PowerPoint.",true,"Gratis (GPT-4o)","M365 Copilot: $30/mes",false],
+["poe","Poe","🔀","Asistentes Generales","https://poe.com","Accede a Claude, GPT-4, Gemini y más desde una sola app. Ideal para comparar modelos.",true,"Créditos limitados por modelo","$19.99/mes",false],
+["pi","Pi","π","Asistentes Generales","https://pi.ai","Asistente personal conversacional de Inflection. Empático, ideal para reflexionar.",true,"Completamente gratis","Gratis",false],
+// ── Agentes IA ───────────────────────────────────────────────────────────
+["manus","Manus","🤖","Agentes IA","https://manus.im","Agente IA autónomo que navega la web, ejecuta código, gestiona archivos y completa tareas complejas por ti.",false,"Lista de espera","De pago",false],
+["devin","Devin","👨‍💻","Agentes IA","https://devin.ai","El primer ingeniero de software IA autónomo. Escribe, ejecuta y despliega código completo.",false,"No disponible","$500/mes (Teams)",false],
+["operator","Operator","🕹","Agentes IA","https://openai.com/operator","Agente de OpenAI que opera tu navegador: compra, rellena formularios y hace reservas.",false,"Solo Plus/Pro","Con ChatGPT Plus: $20/mes",false],
+// ── Código ───────────────────────────────────────────────────────────────
+["claudecode","Claude Code","⌨️","Código","https://claude.ai/code","Agente de terminal que trabaja directamente en tu codebase. Edita ficheros, ejecuta tests, hace refactors y abre PRs. Para proyectos reales ya existentes.",false,"Solo con Claude Pro/Max","Pro: $20/mes",false],
+["cursor","Cursor","▸","Código","https://cursor.sh","IDE basado en VS Code con IA. El mejor para editar, refactorizar y navegar proyectos grandes ya existentes con lenguaje natural.",true,"Hobby: 2.000 completions/mes","Pro: $20/mes",false],
+["v0","v0 by Vercel","◻","Código","https://v0.dev","Genera componentes React/UI aislados desde texto o screenshots. Ideal para diseñar piezas visuales, NO para proyectos completos.",true,"Créditos limitados/mes","Pro: $20/mes",false],
+["boltnew","Bolt.new","⚡","Código","https://bolt.new","Genera aplicaciones web completas con preview y despliegue desde el navegador. Sin instalar nada. Ideal para MVPs desde cero.",true,"Créditos limitados","Pro: $20/mes",false],
+["lovable","Lovable","💜","Código","https://lovable.dev","Convierte ideas en apps React+Supabase completas sin tocar código. Ideal para no-devs que quieren MVPs rápidos con base de datos.",true,"5 mensajes/día","Pro: $20/mes",false],
+["replit","Replit AI","🔷","Código","https://replit.com","Programa y despliega en el navegador con agente IA integrado. Perfecto para scripts rápidos y prototipos sin instalar nada.",true,"Plan Starter gratis","Core: $20/mes",false],
+["windsurf","Windsurf","🏄‍♂️","Código","https://codeium.com/windsurf","Editor IA gratuito con agente 'Cascade'. La mejor alternativa gratuita a Cursor para proyectos existentes.",true,"Gratis con límites","Pro: $15/mes",false],
+["ghcopilot","GitHub Copilot","🐙","Código","https://github.com/features/copilot","Autocompletado de código en VS Code, JetBrains y más mientras escribes. El estándar en equipos profesionales. GRATIS para estudiantes.",false,"30 días gratis","$10/mes — GRATIS para estudiantes",true],
+["tabnine","Tabnine","💡","Código","https://tabnine.com","Autocompletado IA que aprende tu base de código. Compatible con todos los IDEs.",true,"Gratis básico","Pro: $12/mes",false],
+// ── Imágenes ─────────────────────────────────────────────────────────────
+["midjourney","Midjourney","🎨","Imágenes","https://midjourney.com","El referente absoluto en calidad artística. Imágenes increíblemente detalladas y estéticas.",false,"No (antes tenía plan free)","Basic: $10/mes",false],
+["dalle","DALL·E 3","🖼","Imágenes","https://openai.com/dall-e-3","Generador de imágenes integrado en ChatGPT. Sigue instrucciones literales con mucha precisión.",true,"Incluido en ChatGPT Free (límites)","Con ChatGPT Plus: $20/mes",false],
+["flux","Flux","🌊","Imágenes","https://blackforestlabs.ai","Modelo open source de altísima calidad fotorrealista. Disponible en muchas plataformas gratis.",true,"En plataformas como Fal.ai","API: pago por uso",false],
+["stablediff","Stable Diffusion","⚙","Imágenes","https://stability.ai","100% open source, corre en local, máxima personalización y control sin coste adicional.",true,"Open source y gratis","API Stability: créditos",false],
+["firefly","Adobe Firefly","🦋","Imágenes","https://firefly.adobe.com","Imágenes seguras para uso comercial. Integrada en Photoshop e Illustrator.",true,"25 créditos/mes gratis","Con Creative Cloud — descuento educación",true],
+["ideogram","Ideogram","🔤","Imágenes","https://ideogram.ai","El mejor para incluir texto legible dentro de imágenes. Ideal para logos y pósters.",true,"Generaciones básicas gratis","Basic: $8/mes",false],
+["leonardo","Leonardo AI","🎮","Imágenes","https://leonardo.ai","Concept art, assets para videojuegos y personajes consistentes. Gran control y calidad.",true,"150 créditos/día gratis","Apprentice: $12/mes",false],
+["krea","Krea","🌀","Imágenes","https://krea.ai","Generación de imágenes en tiempo real mientras dibujas. Increíble para creativos.",true,"Gratis limitado","Pro: $35/mes",false],
+// ── Vídeo ─────────────────────────────────────────────────────────────────
+["runway","Runway","🎬","Vídeo","https://runwayml.com","El estudio de vídeo IA más completo: Gen-3, efectos, rotoscoping y mucho más.",true,"125 créditos gratis","Standard: $15/mes",false],
+["sora","Sora","🌅","Vídeo","https://sora.com","Generación de vídeo fotorrealista desde texto. Hasta 20s en 1080p. OpenAI.",false,"Solo ChatGPT Plus/Pro","Con Plus: $20/mes",false],
+["kling","Kling AI","🎥","Vídeo","https://klingai.com","Vídeo con movimientos físicamente realistas. Muy competitivo en calidad y precio.",true,"Créditos gratis diarios","Standard: ~$10/mes",false],
+["pika","Pika","📽","Vídeo","https://pika.art","Clips cortos de vídeo desde imágenes o texto. Rápido y de buena calidad.",true,"Créditos gratis","Basic: $8/mes",false],
+["luma","Luma Dream Machine","🌙","Vídeo","https://lumalabs.ai/dream-machine","Vídeo fluido y realista. Muy bueno para movimientos de cámara y escenas dinámicas.",true,"30 vídeos/mes gratis","Plus: $29.99/mes",false],
+["descript","Descript","✂","Vídeo","https://descript.com","Edita vídeo y podcast directamente sobre la transcripción. Elimina muletillas con 1 clic.",true,"1h transcripción gratis","Hobbyist: $24/mes",false],
+["captions","Captions.ai","💬","Vídeo","https://captions.ai","Subtítulos automáticos perfectos para reels y TikTok. Edición de vídeo con IA en móvil.",true,"Funciones básicas gratis","Pro: $19.99/mes",false],
+// ── Audio y Música ───────────────────────────────────────────────────────
+["suno","Suno","🎵","Audio y Música","https://suno.ai","Genera canciones completas con voz, letra y música desde una frase de texto.",true,"50 créditos/día","Pro: $10/mes",false],
+["udio","Udio","🎶","Audio y Música","https://udio.com","Música de alta calidad con gran control de estilos, géneros e instrumentos.",true,"Gratis con límites","Standard: $10/mes",false],
+["elevenlabs","ElevenLabs","🎙","Audio y Música","https://elevenlabs.io","Clonación de voz y text-to-speech ultra realista. El mejor del mercado en español.",true,"10.000 caracteres/mes","Starter: $5/mes",false],
+["whisper","Whisper","📝","Audio y Música","https://openai.com/research/whisper","Transcripción de audio open source de OpenAI. Gratis, corre local, altísima precisión.",true,"100% gratis (open source)","API: pago por minuto",false],
+["adobepodcast","Adobe Podcast","🎤","Audio y Música","https://podcast.adobe.com","Mejora la calidad de tu audio y elimina ruido de fondo con un clic.",true,"Enhance gratuito","Funciones avanzadas con Creative Cloud",true],
+["krisp","Krisp","🔇","Audio y Música","https://krisp.ai","Elimina el ruido de fondo de tus llamadas en tiempo real. Imprescindible en teletrabajo.",true,"60 min/día gratis","Pro: $8/mes",false],
+["riverside","Riverside.fm","🎙","Audio y Música","https://riverside.fm","Graba podcasts y entrevistas en calidad de estudio de forma remota, en el navegador.",true,"Grabaciones limitadas","Standard: $15/mes",false],
+// ── Presentaciones ───────────────────────────────────────────────────────
+["gamma","Gamma","🎯","Presentaciones","https://gamma.app","Genera presentaciones, documentos y webs profesionales desde texto en segundos.",true,"400 créditos gratis","Plus: $10/mes",false],
+["beautifulai","Beautiful.ai","✨","Presentaciones","https://beautiful.ai","Slides que se rediseñan solas. Siempre visualmente perfectas sin esfuerzo.",false,"14 días gratis","Pro: $12/mes",false],
+["tome","Tome","📖","Presentaciones","https://tome.app","Presentaciones narrativas con IA, enfocadas en storytelling visual.",true,"Gratis básico","Pro: $20/mes",false],
+// ── Productividad ────────────────────────────────────────────────────────
+["notionai","Notion AI","📓","Productividad","https://notion.so/product/ai","IA dentro de Notion para escribir, resumir y organizar. Solo si ya usas Notion.",false,"Solo con plan Notion","+$10/mes sobre tu plan",false],
+["otterai","Otter.ai","🦦","Productividad","https://otter.ai","Transcripción y resumen automático de reuniones de Zoom o Teams en tiempo real.",true,"600 min/mes, 3 importaciones","Pro: $16.99/mes",false],
+["firefliesai","Fireflies.ai","🔥","Productividad","https://fireflies.ai","Graba, transcribe y resume reuniones. Busca cualquier frase dicha en tus calls.",true,"Resúmenes limitados","Pro: $18/mes",false],
+["fathom","Fathom","🐋","Productividad","https://fathom.video","Toma notas de tus reuniones de Zoom y genera resúmenes automáticamente. Gratis.",true,"Gratis para Zoom sin límites","Team Edition: $40/mes",false],
+["granola","Granola","🥣","Productividad","https://granola.ai","Notas de reuniones para Mac. Escucha en segundo plano y genera resúmenes perfectos.",true,"25 reuniones gratis","Pro: $18/mes",false],
+// ── Escritura y Marketing ────────────────────────────────────────────────
+["grammarly","Grammarly","✏","Escritura","https://grammarly.com","Corrección gramatical, estilo y claridad en inglés. Imprescindible para textos formales.",true,"Correcciones básicas gratis","Premium: $12/mes — descuento estudiante",true],
+["wordtune","Wordtune","🔄","Escritura","https://wordtune.com","Reescribe y mejora frases manteniendo tu voz. Ideal para emails y documentos.",true,"10 reescrituras/día","Plus: $9.99/mes",false],
+["jasper","Jasper","📢","Escritura","https://jasper.ai","Copywriting avanzado para equipos de marketing: anuncios, emails, webs y marca.",false,"7 días gratis","Creator: $49/mes",false],
+["copyai","Copy.ai","✍","Escritura","https://copy.ai","Generación rápida de textos de venta, campañas de email y posts para redes.",true,"2.000 palabras/mes","Pro: $36/mes",false],
+["surferseo","Surfer SEO","🏄","Escritura","https://surferseo.com","Optimización de contenido web con datos para posicionar en Google.",false,"No","Essential: $89/mes",false],
+["quillbot","QuillBot","🪶","Escritura","https://quillbot.com","Parafraseo, resumen y corrección de textos. Muy usado en ámbito académico.",true,"Límites en longitud","Premium: $9.95/mes — descuento estudiante",true],
+// ── Diseño ───────────────────────────────────────────────────────────────
+["canvaai","Canva AI","🎨","Diseño","https://canva.com","Diseño gráfico con IA: imágenes, logos, redes sociales, presentaciones y vídeos.",true,"Plan gratuito generoso","Pro: $14.99/mes — 50% descuento estudiante",true],
+["looka","Looka","🏷","Diseño","https://looka.com","Generador de logos y branding completo para startups en minutos.",false,"Vista previa gratis","Logo: desde $20 pago único",false],
+["framer","Framer AI","🖥","Diseño","https://framer.com","Crea sitios web con diseño generativo desde texto. Publica en segundos.",true,"Gratis (dominio framer.site)","Mini: $5/mes",false],
+["napkinai","Napkin AI","📐","Diseño","https://napkin.ai","Convierte texto en diagramas, infografías y visualizaciones automáticamente.",true,"Gratis en beta","Pro próximamente",false],
+["adobeexpress","Adobe Express","⭐","Diseño","https://express.adobe.com","Diseño rápido con IA para redes sociales, flyers y contenido visual.",true,"Plan gratuito generoso","Premium: $9.99/mes — descuento educación",true],
+// ── Fotos y Edición ──────────────────────────────────────────────────────
+["photoroom","Photoroom","📸","Fotos","https://photoroom.com","Elimina fondos y crea fotos de producto profesionales con IA. Perfecto para ecommerce.",true,"10 imágenes/mes sin marca","Pro: $10/mes",false],
+["removebg","Remove.bg","🔳","Fotos","https://remove.bg","Eliminación de fondo en un clic. El más rápido y preciso del mercado.",true,"Vista previa gratis (baja res)","Créditos desde $1.99",false],
+["topaz","Topaz","💎","Fotos","https://topazlabs.com","Ampliar resolución, eliminar ruido y mejorar calidad de fotos con IA. Profesional.",false,"Prueba gratuita","Desde $99/año",false],
+["pixelcut","Pixelcut","✂","Fotos","https://pixelcut.ai","Editor de fotos IA para móvil: recorte, mejora y fotos de producto.",true,"Gratis con límites","Pro: $7.99/mes",false],
+// ── 3D y Avatares ────────────────────────────────────────────────────────
+["meshy","Meshy","🧊","3D y Avatares","https://meshy.ai","Genera y texturiza modelos 3D desde texto o imágenes en segundos.",true,"200 créditos/mes","Pro: $20/mes",false],
+["lumaai3d","Luma AI (3D)","📷","3D y Avatares","https://lumalabs.ai","Reconstrucción 3D fotorrealista (NeRF) a partir de vídeo o fotos.",true,"Capturas limitadas gratis","Pro: $9.99/mes",false],
+["heygen","HeyGen","👤","3D y Avatares","https://heygen.com","Vídeos con presentadores IA. Traduce y sincroniza labios a cualquier idioma.",true,"1 crédito gratis","Creator: $29/mes",false],
+["synthesia","Synthesia","🎭","3D y Avatares","https://synthesia.io","Vídeos corporativos con avatares IA en más de 140 idiomas. Ideal para formación.",false,"Demo gratuita","Starter: $22/mes",false],
+["did","D-ID","🗣","3D y Avatares","https://d-id.com","Anima fotos y crea vídeos con avatares parlantes. API disponible.",true,"20 créditos gratis","Lite: $5.9/mes",false],
+// ── Traducción ───────────────────────────────────────────────────────────
+["deepl","DeepL","🌍","Traducción","https://deepl.com","La mejor calidad de traducción del mercado, especialmente en lenguas europeas.",true,"500.000 caracteres/mes","Pro: $8.74/mes",false],
+["googletrans","Google Translate","🗣","Traducción","https://translate.google.com","Traducción rápida con soporte para más de 130 idiomas. Integrado en Chrome y Android.",true,"Completamente gratis","API: pago por uso",false],
+// ── Datos y Análisis ─────────────────────────────────────────────────────
+["julius","Julius AI","📈","Datos y Análisis","https://julius.ai","Chatea con tus datos, crea gráficos y análisis estadístico directo. Excel elevado al máximo.",true,"Mensajes limitados/mes","Basic: $20/mes",false],
+["chatcsv","ChatCSV","📊","Datos y Análisis","https://chatcsv.co","Sube un CSV y hazle preguntas en lenguaje natural. Simple y eficaz.",true,"Archivos pequeños gratis","Pro: $19/mes",false],
+// ── Automatización ───────────────────────────────────────────────────────
+["zapierai","Zapier AI","⚡","Automatización","https://zapier.com/ai","Crea automatizaciones entre apps con comandos en lenguaje natural. Sin código.",true,"100 tareas/mes gratis","Starter: $19.99/mes",false],
+["make","Make","🔄","Automatización","https://make.com","Automatizaciones visuales más potentes que Zapier. Gran control y flexibilidad.",true,"1.000 operaciones/mes","Core: $9/mes",false],
+["n8n","n8n","🔗","Automatización","https://n8n.io","Automatización open source, self-hosteable. Sin límites y máxima privacidad.",true,"Self-hosted gratis","Cloud: $20/mes",false],
+// ── Documentos ───────────────────────────────────────────────────────────
+["chatpdf","ChatPDF","📄","Documentos","https://chatpdf.com","Chatea con cualquier PDF: resúmenes, preguntas y extracción de datos al instante.",true,"3 PDFs/día, 50 preguntas","Plus: $5/mes",false],
+["pdfai","PDF.ai","📋","Documentos","https://pdf.ai","Sube PDFs y extrae información, resume y responde preguntas sobre el contenido.",true,"1 PDF gratis","Basic: $9.99/mes",false],
+["humata","Humata","📚","Documentos","https://humata.ai","Analiza, resume y responde sobre papers y documentos largos. Muy bueno para TFG.",true,"60 páginas gratis","Student: $1.99/mes — descuento estudiante",true],
+];
+
+const TOOLS = RAW.map(([id,name,emoji,cat,url,desc,free,freeTier,paid,student]) =>
+  ({id,name,emoji,cat,url,desc,free,freeTier,paid,student}));
+const MAP = Object.fromEntries(TOOLS.map(t=>[t.id,t]));
+const ALL_CATS = [...new Set(TOOLS.map(t=>t.cat))];
+
+// ────────────────────────────────────────────────────────────────────────────
+// STATE
+// ────────────────────────────────────────────────────────────────────────────
+let progTimer = null;
+let compareList = [];
+let clarifyAnswers = {};
+let currentClarifyQuery = '';
+
+const STAGES = [
+  [15, "Leyendo tu consulta..."],
+  [32, "Buscando entre " + TOOLS.length + " herramientas..."],
+  [55, "Evaluando opciones para ti..."],
+  [78, "Personalizando recomendaciones..."],
+  [92, "Casi listo..."],
+];
+
+// ────────────────────────────────────────────────────────────────────────────
+// UTILITIES
+// ────────────────────────────────────────────────────────────────────────────
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ── callAI: usa Groq via proxy Vercel ─────────────────────────────────────────
+// Groq es gratis (console.groq.com, sin tarjeta), muy rápido (llama-3.3-70b)
+const TOOL_CATALOG = TOOLS.map(t =>
+  `[${t.id}] ${t.name} | ${t.cat} | ${t.free?'GRATIS':'De pago'} | ${t.desc}`
+).join('\n');
+
+const AI_SYSTEM = `Eres un experto en herramientas de IA. El usuario describe una tarea y debes recomendar las mejores herramientas del catálogo siguiente.
+
+CATÁLOGO COMPLETO (usa EXACTAMENTE estos IDs):
+${TOOL_CATALOG}
+
+INSTRUCCIONES:
+- Razona sobre la tarea del usuario: ¿qué necesita realmente? ¿cuál es su intención?
+- Distingue entre CREAR algo nuevo vs ANALIZAR datos existentes
+- Distingue entre usuario técnico vs no técnico si es relevante
+- Si la consulta es muy ambigua y la respuesta cambiaría completamente, pregunta UNA sola cosa
+- En general ve directo a recomendar: 3-5 herramientas ordenadas por relevancia real
+- El "why" debe explicar por qué ESA herramienta para ESA tarea específica (no su descripción genérica)
+- El "tip" debe ser un paso concreto y accionable que el usuario puede hacer hoy
+
+RESPONDE SOLO en JSON válido, sin markdown, sin backticks:
+
+Si necesitas clarificación:
+{"type":"clarify","intro":"frase corta explicando por qué preguntas","questions":[{"id":"q1","text":"pregunta","multi":false,"options":[{"val":"v","label":"Opción"}]}]}
+
+Si tienes suficiente información:
+{"type":"recommend","summary":"1-2 frases explicando el razonamiento","recommendations":[{"id":"tool_id","rank":1,"why":"por qué esta herramienta para esta tarea concreta","tip":"paso accionable específico"}]}
+
+Responde siempre en el mismo idioma que el usuario.`;
+
+async function callAI(query, forceRecommend = false) {
+  const userMsg = forceRecommend
+    ? query + '\n\n(El usuario ya ha dado contexto. Da recomendaciones directas, no pidas más aclaraciones.)'
+    : query;
+
+  const r = await fetch('/api/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ query: userMsg, system: AI_SYSTEM })
+  });
+  if (!r.ok) {
+    const d = await r.json().catch(()=>({}));
+    throw new Error(d?.error || `HTTP ${r.status}`);
+  }
+  const d = await r.json();
+  return JSON.parse(d.text.replace(/```json|```/g,'').trim());
+}
+
+// callClaude kept for compare (same proxy, different payload)
+async function callClaude(messages, system) {
+  const r = await fetch('/api/chat', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ messages, system })
+  });
+  if (!r.ok) { const d = await r.json().catch(()=>({})); throw new Error(d?.error || `HTTP ${r.status}`); }
+  const d = await r.json();
+  return JSON.parse(d.text.replace(/```json|```/g,'').trim());
+}
+
+function startProgress() {
+  const fill = document.getElementById('progFill');
+  const lbl  = document.getElementById('progLbl');
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+  void fill.offsetWidth;
+  fill.style.transition = 'width .55s cubic-bezier(.4,0,.2,1)';
+  let i = 0;
+  const delays = [250,700,600,700,500];
+  function step() {
+    if (i >= STAGES.length) return;
+    const [pct, txt] = STAGES[i];
+    fill.style.width = pct + '%';
+    lbl.textContent = txt;
+    progTimer = setTimeout(step, delays[i++] || 600);
+  }
+  step();
+}
+
+function endProgress(cb) {
+  clearTimeout(progTimer);
+  const fill = document.getElementById('progFill');
+  const lbl  = document.getElementById('progLbl');
+  fill.style.width = '100%';
+  lbl.textContent = '✓ Listo';
+  setTimeout(() => {
+    document.getElementById('loading').classList.remove('on');
+    cb && cb();
+  }, 300);
+}
+
+function showErr(msg) {
+  const e = document.getElementById('err');
+  e.textContent = msg;
+  e.classList.add('on');
+}
+function hideErr() { document.getElementById('err').classList.remove('on'); }
+function setBtn(d) { document.getElementById('findBtn').disabled = d; }
+
+// Scroll suave solo cuando el elemento está fuera del viewport
+function softScroll(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const inView = rect.top >= 0 && rect.top < window.innerHeight * 0.6;
+  if (!inView) el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// MOTOR DE RECOMENDACIÓN — 100% local, sin API, sin coste
+// ────────────────────────────────────────────────────────────────────────────
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function norm(s) {
+  return s.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')  // sin tildes
+    .replace(/[^a-z0-9 ]/g,' ');
+}
+function has(q, ...terms) { return terms.some(t => q.includes(t)); }
+
+// Detecta intención: ¿quiere CREAR algo desde cero o ANALIZAR algo existente?
+function isCreating(q) {
+  return has(q,'crear','crea','hacer','haz','generar','genera','construir','construye','disenar','disena','desde cero','de cero','de la nada','plantilla','automatizar','script','macro','formulas','con formulas','profesional');
+}
+function isAnalyzing(q) {
+  return has(q,'analizar','analiza','mis datos','tengo datos','tengo un excel','mi excel','este csv','este archivo','explorar datos','entender datos','visualizar','grafico de mis','dashboard de mis');
+}
+// Detecta si el usuario sabe programar
+function isDev(q) {
+  return has(q,'react','javascript','typescript','python','html','css','git','api','backend','frontend','node','next','vue','codigo','programar','desarrollar','deploy','repo','github','npm','pip','sql');
+}
+// Detecta "desde cero / sin saber / sin código"
+function isNoCode(q) {
+  return has(q,'sin codigo','sin programar','sin saber','no se programar','no programo','no se codigo','sin conocimientos','soy autonomo','soy emprendedor','para mi negocio','no soy tecnico');
+}
+
+// ── Definición de reglas ──────────────────────────────────────────────────────
+const RULES = [
+
+  // ── BÚSQUEDA ────────────────────────────────────────────────────────────────
+  { match: q => has(q,'buscar noticias','noticias recientes','noticias de','informacion reciente','buscar rapido','buscar de forma fiable','buscar cosas','buscar informacion','verificar informacion','fuentes fiables','fuentes verificadas','contrastar'),
+    result: { type:'recommend', summary:'Para búsquedas fiables con fuentes citadas, Perplexity es la mejor opción del mercado.', recommendations:[
+      {id:'perplexity', rank:1, why:'Cita las fuentes en cada respuesta. Navega la web en tiempo real. El Google mejorado con IA.', tip:'Escribe tu pregunta como lo harías a un experto, no como en Google. Activa "Academic" para investigación.'},
+      {id:'youcom',     rank:2, why:'Alternativa a Perplexity con modo privado y sin tracking.', tip:'Activa el modo "Research" para respuestas más detalladas con fuentes.'},
+      {id:'grok',       rank:3, why:'Acceso en tiempo real a X/Twitter. Ideal para noticias muy recientes y tendencias.', tip:'Úsalo para noticias de las últimas horas que Perplexity aún no indexa.'},
+    ]}},
+
+  // ── PAPERS / INVESTIGACIÓN ACADÉMICA ────────────────────────────────────────
+  { match: q => has(q,'papers','articulos cientificos','investigacion academica','buscar estudios','revisar literatura','tfg','tesis','revisiones sistematicas','pubmed','scholar'),
+    result: { type:'recommend', summary:'Para investigación académica hay herramientas especializadas mucho mejores que Google Scholar.', recommendations:[
+      {id:'consensus',  rank:1, why:'Sintetiza resultados de papers y te dice si hay consenso científico sobre un tema.', tip:'Pregunta directamente "¿Es efectivo X para Y?" — te responde con porcentaje de consenso y citas.'},
+      {id:'elicit',     rank:2, why:'Extrae datos de papers automáticamente. Ideal para revisar 20 estudios en 10 minutos.', tip:'Sube tu pregunta de investigación y pídele que extraiga columnas específicas (muestra, resultados, limitaciones).'},
+      {id:'notebooklm', rank:3, why:'Sube los PDFs de los papers y hazle preguntas directas sobre su contenido.', tip:'Crea un notebook con los 5-10 papers más relevantes y pregúntale que compare metodologías.'},
+    ]}},
+
+  // ── APUNTES / ESTUDIAR ───────────────────────────────────────────────────────
+  { match: q => has(q,'apuntes','estudiar','resumir apuntes','notas de clase','preparar examen','estudiar para','resumen de tema','entender un tema'),
+    result: { type:'recommend', summary:'Para estudiar y gestionar apuntes, NotebookLM de Google es gratuito e insuperable.', recommendations:[
+      {id:'notebooklm', rank:1, why:'Sube tus PDFs o apuntes y genera resúmenes, preguntas de examen y hasta podcasts de audio. 100% gratis.', tip:'Sube todos los PDFs del tema → pídele que genere 20 preguntas tipo examen con respuestas.'},
+      {id:'claude',     rank:2, why:'Para explicar conceptos difíciles paso a paso o crear esquemas y mapas conceptuales.', tip:'Dile: "Explícame [concepto] como si tuviera 15 años, con ejemplos reales".'},
+      {id:'chatgpt',    rank:3, why:'Plan gratuito generoso. Útil para resolver dudas rápidas mientras estudias.', tip:'Úsalo para comprobar si entiendes bien: "Voy a explicarte X, corrígeme si me equivoco".'},
+    ]}},
+
+  // ── TRANSCRIBIR REUNIONES ────────────────────────────────────────────────────
+  { match: q => has(q,'transcribir reunion','notas reunion','resumir reunion','notas de llamada','acta reunion','meeting notes','zoom notas','teams notas'),
+    result: { type:'recommend', summary:'Para reuniones automáticas, Fathom es gratis y funciona sin configuración.', recommendations:[
+      {id:'fathom',    rank:1, why:'Se instala en Zoom en 2 minutos. Transcribe y resume automáticamente cada llamada. Gratis sin límites.', tip:'Instala la extensión antes de tu próxima reunión de Zoom → te llegará el resumen por email al acabar.'},
+      {id:'otterai',   rank:2, why:'Funciona en Zoom, Teams y Google Meet. 600 minutos al mes gratis.', tip:'Activa "Auto-join" para que entre automáticamente a todas tus reuniones del calendario.'},
+      {id:'firefliesai',rank:3, why:'Busca cualquier frase dicha en tus reuniones pasadas. Muy útil para recuperar decisiones.', tip:'Conecta tu Google Calendar para que se una automáticamente a todas las reuniones.'},
+    ]}},
+
+  // ── TRANSCRIBIR AUDIO ────────────────────────────────────────────────────────
+  { match: q => has(q,'transcribir audio','pasar audio a texto','transcribir video','subtitulos','convertir audio','grabar y transcribir'),
+    result: { type:'recommend', summary:'Para transcripción de audio, Whisper de OpenAI es el estándar: gratis y muy preciso.', recommendations:[
+      {id:'whisper',    rank:1, why:'Open source de OpenAI, gratis, funciona offline y es el más preciso del mercado en español.', tip:'Instálalo con: pip install openai-whisper && whisper tu_audio.mp3 --language Spanish'},
+      {id:'otterai',   rank:2, why:'Si quieres una solución online sin instalar nada. Sube el audio y listo.', tip:'Usa el plan gratuito para archivos de hasta 40 minutos.'},
+      {id:'descript',  rank:3, why:'Edita el audio/vídeo directamente sobre la transcripción. Si necesitas editar además de transcribir.', tip:'Importa tu vídeo → selecciona texto → bórralo para eliminar esa parte del vídeo automáticamente.'},
+    ]}},
+
+  // ── PRESENTACIONES ───────────────────────────────────────────────────────────
+  { match: q => has(q,'presentacion','presentaciones','hacer slides','hacer diapositivas','powerpoint','pitch deck','deck para'),
+    result: { type:'recommend', summary:'Gamma genera presentaciones profesionales desde texto en segundos — mucho más rápido que PowerPoint.', recommendations:[
+      {id:'gamma',       rank:1, why:'Genera una presentación completa desde un párrafo de texto. Diseño automático siempre correcto.', tip:'Escríbele: "Crea una presentación de 10 slides sobre [tema] para [audiencia]" y ajusta el tono.'},
+      {id:'beautifulai', rank:2, why:'Slides que se rediseñan solas al añadir contenido. Para equipos que hacen muchas presentaciones.', tip:'Empieza con una plantilla de tu industria para ahorrar tiempo en el diseño inicial.'},
+      {id:'tome',        rank:3, why:'Presentaciones más narrativas, tipo web interactiva. Ideal para propuestas y storytelling.', tip:'Úsalo cuando quieras una presentación que se lea como una historia, no como un listado de bullets.'},
+    ]}},
+
+  // ── IMÁGENES ARTÍSTICAS ──────────────────────────────────────────────────────
+  { match: q => has(q,'generar imagenes','crear imagenes','imagenes con ia','imagenes artisticas','ilustraciones','arte con ia','imagen de','dibujo con ia'),
+    result: { type:'clarify', intro:'El mejor generador de imágenes depende de qué tipo de imagen necesitas:', questions:[
+      { id:'tipo', text:'¿Qué tipo de imagen necesitas?', multi:false, options:[
+        {val:'art',       label:'🎨 Arte e ilustraciones (calidad artística máxima)'},
+        {val:'photo',     label:'📷 Fotografías realistas'},
+        {val:'logo',      label:'🔤 Logos o imágenes con texto'},
+        {val:'product',   label:'🛒 Fotos de producto / ecommerce'},
+        {val:'commercial',label:'💼 Uso comercial sin restricciones de copyright'},
+      ]}
+    ]}},
+
+  // ── IMÁGENES — post clarify ──────────────────────────────────────────────────
+  { match: q => has(q,'arte e ilustraciones','calidad artistica'),
+    result: { type:'recommend', summary:'Para arte e ilustraciones de alta calidad, Midjourney sigue siendo el referente absoluto.', recommendations:[
+      {id:'midjourney', rank:1, why:'El mejor en calidad artística y estética. Sus imágenes tienen un nivel de detalle y coherencia visual imbatible.', tip:'Usa parámetros como --style raw y --ar 16:9 para más control. Empieza con /imagine en su Discord.'},
+      {id:'flux',       rank:2, why:'Open source con calidad fotorrealista excelente. Disponible gratis en plataformas como Fal.ai.', tip:'Pruébalo en fal.ai/models/fal-ai/flux — gratis con créditos diarios.'},
+      {id:'dalle',      rank:3, why:'Integrado en ChatGPT. Muy bueno para seguir instrucciones literales y composiciones precisas.', tip:'Úsalo desde ChatGPT Plus describiendo la imagen en detalle: colores, estilo, perspectiva, iluminación.'},
+    ]}},
+  { match: q => has(q,'logos','incluir texto','carteles','texto en imagen','letras en imagen'),
+    result: { type:'recommend', summary:'Para logos y texto en imágenes, Ideogram es el mejor — los demás deforman las letras.', recommendations:[
+      {id:'ideogram',  rank:1, why:'El único que genera texto legible y bonito dentro de imágenes. Imprescindible para logos y carteles.', tip:'Activa el modo "Design" para logos y especifica la fuente que quieres: "logo minimalista, fuente sans-serif, fondo blanco".'},
+      {id:'looka',     rank:2, why:'Específicamente para branding completo: logo + paleta + tipografía + mockups.', tip:'Empieza gratis con la vista previa — solo pagas si te gusta el resultado final.'},
+      {id:'canvaai',   rank:3, why:'Para crear el diseño completo de marca con el logo ya generado.', tip:'Usa Magic Design en Canva con tu logo para generar posts, tarjetas y materiales coherentes.'},
+    ]}},
+
+  // ── VÍDEO CORTO / REDES ──────────────────────────────────────────────────────
+  { match: q => has(q,'reels','tiktok','shorts','subtitulos automaticos','video corto','video para redes','caption'),
+    result: { type:'recommend', summary:'Para vídeos cortos y redes sociales, Captions.ai es la app más completa del móvil.', recommendations:[
+      {id:'captions', rank:1, why:'Subtítulos automáticos perfectos, edición con IA y efectos para TikTok/Instagram directo desde el móvil.', tip:'Graba el vídeo → sube a Captions → elige el estilo de subtítulos → exporta listo para publicar.'},
+      {id:'pika',     rank:2, why:'Para animar imágenes o crear clips cortos desde texto con muy buena calidad.', tip:'Sube una imagen tuya o de producto y escríbele el movimiento que quieres: "slow zoom in, cinematic".'},
+      {id:'canvaai',  rank:3, why:'Para crear el texto, portadas y gráficos que acompañan al vídeo.', tip:'Usa la plantilla de Reels en Canva para mantener el formato 9:16 correcto automáticamente.'},
+    ]}},
+
+  // ── VÍDEO LARGO / EDICIÓN ────────────────────────────────────────────────────
+  { match: q => has(q,'editar video','edicion de video','montar video','podcast video','youtube video','eliminar silencios','cortar video'),
+    result: { type:'recommend', summary:'Para editar vídeos largos o podcasts, Descript es la herramienta más potente con IA.', recommendations:[
+      {id:'descript', rank:1, why:'Edita el vídeo/audio borrando palabras del texto. Elimina muletillas con un clic. Único en su tipo.', tip:'Importa tu vídeo → activa "Remove filler words" → elimina todas las "ehhh" y silencios en 30 segundos.'},
+      {id:'runway',   rank:2, why:'Para efectos avanzados, rotoscoping y generación de vídeo IA dentro de tu edición.', tip:'Usa "Inpainting" para eliminar objetos o personas del fondo sin regrabar.'},
+      {id:'captions', rank:3, why:'Para añadir subtítulos automáticos perfectos al resultado final.', tip:'Exporta desde Descript → importa en Captions para subtítulos animados antes de publicar.'},
+    ]}},
+
+  // ── GENERAR VÍDEO DESDE CERO ────────────────────────────────────────────────
+  { match: q => has(q,'generar video','crear video con ia','video desde texto','video ia','sora','videogeneration'),
+    result: { type:'recommend', summary:'Para generar vídeos con IA desde texto o imágenes, hay varias opciones según calidad y precio.', recommendations:[
+      {id:'kling',  rank:1, why:'La mejor relación calidad-precio. Movimientos físicamente realistas y créditos gratis diarios.', tip:'Empieza con el modo "Image to Video" subiendo una foto — es más controlable que texto a vídeo.'},
+      {id:'luma',   rank:2, why:'Muy bueno para movimientos de cámara y escenas dinámicas. 30 vídeos gratis al mes.', tip:'Describe el movimiento de cámara explícitamente: "slow dolly forward, golden hour lighting".'},
+      {id:'runway', rank:3, why:'El estudio IA más completo. Más opciones de control y efectos que los demás.', tip:'Usa Gen-3 Alpha con imagen de referencia para resultados más consistentes y controlados.'},
+    ]}},
+
+  // ── MÚSICA ──────────────────────────────────────────────────────────────────
+  { match: q => has(q,'crear musica','generar musica','componer musica','cancion con ia','musica ia','banda sonora'),
+    result: { type:'recommend', summary:'Para crear música completa con IA, Suno y Udio son los referentes actuales.', recommendations:[
+      {id:'suno', rank:1, why:'Genera canciones completas con voz, letra y producción desde una frase. 50 créditos gratis al día.', tip:'Sé muy específico con el estilo: "indie pop, female vocals, upbeat, 120 bpm, about summer" para mejores resultados.'},
+      {id:'udio', rank:2, why:'Mejor control de estilos e instrumentos. La calidad del audio es ligeramente superior.', tip:'Usa el modo "Instrumental" si solo quieres música de fondo sin letra.'},
+    ]}},
+
+  // ── VOZ / AUDIO ─────────────────────────────────────────────────────────────
+  { match: q => has(q,'clonar voz','voz ia','text to speech','tts','voiceover','doblaje','narrar','locucion'),
+    result: { type:'recommend', summary:'Para voz con IA, ElevenLabs es el estándar — calidad cinematográfica en español.', recommendations:[
+      {id:'elevenlabs', rank:1, why:'La mejor calidad de voz IA del mercado. Clonación en 1 minuto, disponible en español perfecto.', tip:'Graba 1-2 minutos de tu voz leyendo en voz alta → sube a ElevenLabs → tendrás tu voz clonada lista.'},
+      {id:'murf',       rank:2, why:'Voces profesionales para cursos y presentaciones. Más fácil de usar que ElevenLabs.', tip:'Usa el modo "Studio" para ajustar velocidad, énfasis y pausas de cada frase individualmente.'},
+    ]}},
+
+  // ── MEJORAR AUDIO ────────────────────────────────────────────────────────────
+  { match: q => has(q,'mejorar audio','eliminar ruido','ruido de fondo','calidad audio','limpiar audio','grabar mejor'),
+    result: { type:'recommend', summary:'Adobe Podcast Enhancement mejora cualquier audio con un clic — gratis y online.', recommendations:[
+      {id:'adobepodcast', rank:1, why:'Elimina ruido de fondo, reverb y artefactos de cualquier grabación. Gratis y tarda segundos.', tip:'Ve a podcast.adobe.com → Enhance Speech → sube tu audio → descarga el resultado limpio.'},
+      {id:'krisp',        rank:2, why:'Para eliminar ruido en tiempo real durante llamadas y reuniones (no para archivos).', tip:'Instala Krisp y selecciónalo como micrófono virtual en Zoom/Teams.'},
+    ]}},
+
+  // ── CÓDIGO — PROYECTO EXISTENTE ──────────────────────────────────────────────
+  { match: q => has(q,'refactorizar','refactoring','mejorar mi codigo','revisar mi codigo','añadir feature','feature a mi proyecto','trabajar en mi repo','mi proyecto existente','pull request','pr review','hacer tests','unit tests','bug en mi codigo'),
+    result: { type:'recommend', summary:'Para trabajar sobre código existente, Claude Code y Cursor son las herramientas más potentes.', recommendations:[
+      {id:'claudecode', rank:1, why:'Agente de terminal que lee tu repo completo, edita ficheros, ejecuta tests y crea PRs. El más potente para proyectos reales.', tip:'Instala con: npm install -g @anthropic-ai/claude-code && claude en la carpeta de tu proyecto.'},
+      {id:'cursor',     rank:2, why:'IDE completo con IA. Navega y edita proyectos grandes con lenguaje natural en VS Code.', tip:'Abre tu proyecto → Cmd+K para editar con IA → Cmd+L para chatear sobre el código seleccionado.'},
+      {id:'windsurf',   rank:3, why:'Alternativa gratuita a Cursor con el agente Cascade para cambios en múltiples ficheros.', tip:'Usa "Cascade" para tareas que afectan varios ficheros a la vez, como renombrar una función en todo el proyecto.'},
+    ]}},
+
+  // ── CÓDIGO — WEB COMPLETA SIN SABER PROGRAMAR ────────────────────────────────
+  { match: q => (has(q,'hacer una web','crear una web','webs profesionales','webs curradas','webs bonitas','frontend','aplicacion web','sitio web','landing page','ecommerce','tienda online','pagina web') || has(q,'app','aplicacion','plataforma')) && isNoCode(q),
+    result: { type:'recommend', summary:'Sin saber programar, Bolt.new y Lovable generan apps completas desde una descripción de texto.', recommendations:[
+      {id:'boltnew', rank:1, why:'Genera la app completa con backend, base de datos y despliegue desde el navegador. Sin instalar nada ni saber código.', tip:'Describe tu idea en detalle: "Quiero una app de lista de tareas con login, base de datos y diseño moderno" → genera y despliega en 5 minutos.'},
+      {id:'lovable', rank:2, why:'Crea apps React+Supabase completas con autenticación y base de datos real. Mejor para proyectos que necesiten datos persistentes.', tip:'Empieza describiendo el problema: "Una app para que mi equipo registre horas de trabajo con usuarios y gráficos".'},
+      {id:'framer',  rank:3, why:'Para webs de presentación o portfolios sin código. Diseño generativo y publicación inmediata.', tip:'Describe el estilo visual y Framer generará la estructura. Publica gratis con dominio framer.site.'},
+    ]}},
+
+  // ── CÓDIGO — WEB para devs con intención de crear ────────────────────────────
+  { match: q => has(q,'hacer una web','crear una web','webs profesionales','webs curradas','webs bonitas','frontend','aplicacion web','sitio web','landing page','ecommerce','tienda online','pagina web') && (isDev(q) || (!isNoCode(q) && isCreating(q))),
+    result: { type:'clarify', intro:'Para recomendarte bien, necesito saber tu nivel técnico:', questions:[
+      { id:'nivel', text:'¿Sabes programar?', multi:false, options:[
+        {val:'dev',    label:'Sí, sé programar (HTML, JS, React...)'},
+        {val:'nocode', label:'No, quiero hacerlo sin código'},
+        {val:'poco',   label:'Un poco, prefiero herramientas visuales'},
+      ]}
+    ]}},
+
+  // ── CÓDIGO — WEB genérico sin contexto ───────────────────────────────────────
+  { match: q => has(q,'hacer una web','crear una web','pagina web','sitio web') && !isDev(q) && !isNoCode(q) && !isCreating(q),
+    result: { type:'clarify', intro:'Para recomendarte la mejor herramienta, necesito saber cómo quieres hacerlo:', questions:[
+      { id:'nivel', text:'¿Tienes conocimientos de programación?', multi:false, options:[
+        {val:'dev',    label:'Sí, programo (HTML/JS/React)'},
+        {val:'nocode', label:'No, quiero sin código'},
+        {val:'poco',   label:'Algo, prefiero herramientas visuales'},
+      ]}
+    ]}},
+
+  // ── CÓDIGO — COMPONENTES UI ─────────────────────────────────────────────────
+  { match: q => has(q,'componente','navbar','header','footer','boton','card ui','formulario','tabla','interfaz','ui component','componentes react','shadcn'),
+    result: { type:'recommend', summary:'Para diseñar componentes UI aislados, v0 de Vercel es la herramienta más precisa.', recommendations:[
+      {id:'v0',        rank:1, why:'Genera componentes React/Shadcn perfectos desde texto o screenshots. El código es producción-ready.', tip:'Describe el componente con el detalle que quieras: "Navbar con logo izquierda, links centro, botón CTA derecha, dark mode".'},
+      {id:'cursor',    rank:2, why:'Para integrar el componente generado en tu proyecto existente con IA.', tip:'Pega el código de v0 en Cursor → usa Cmd+K para adaptarlo a tu sistema de diseño.'},
+      {id:'framer',    rank:3, why:'Para prototipar el diseño visualmente antes de pasar a código.', tip:'Crea el prototipo en Framer y usa el panel de código para exportar a React.'},
+    ]}},
+
+  // ── EXCEL — CREAR desde cero ────────────────────────────────────────────────
+  { match: q => has(q,'excel','spreadsheet','hoja de calculo') && isCreating(q) && !isAnalyzing(q),
+    result: { type:'recommend', summary:'Para crear Excels complejos desde cero, Claude es imbatible — genera estructuras, fórmulas y macros completas.', recommendations:[
+      {id:'claude',  rank:1, why:'Genera Excels completos desde una descripción: estructura de hojas, fórmulas complejas, formato condicional, incluso código VBA. Mucho más potente que hacerlo a mano.', tip:'Dile exactamente qué quieres: "Crea un Excel para gestionar [X] con estas columnas: [...]. Añade fórmulas para calcular [Y] y formato condicional para [Z]".'},
+      {id:'chatgpt', rank:2, why:'Con el Code Interpreter puede generar el fichero .xlsx directamente y descargarlo.', tip:'Pídele que lo cree y genere el archivo: "Crea un Excel con estas columnas y descárgalo". Necesitas ChatGPT Plus.'},
+      {id:'julius',  rank:3, why:'Si además de crearlo quieres visualizar datos y generar gráficos automáticamente.', tip:'Una vez tengas el Excel, súbelo a Julius para que genere dashboards y análisis visuales en segundos.'},
+    ]}},
+
+  // ── EXCEL — ANALIZAR datos existentes ────────────────────────────────────────
+  { match: q => has(q,'excel','spreadsheet','hoja de calculo','csv','datos en excel','analizar datos','mis datos','graficos','dashboard de datos','sql','base de datos') && (isAnalyzing(q) || !isCreating(q)),
+    result: { type:'recommend', summary:'Para analizar datos con IA, Julius AI es el más directo — chatea con tu Excel sin fórmulas.', recommendations:[
+      {id:'julius',  rank:1, why:'Sube tu Excel o CSV y hazle preguntas en español. Genera gráficos y análisis automáticamente sin escribir fórmulas.', tip:'Sube tu fichero → pregunta "¿Cuál es el producto más vendido por mes?" → te devuelve el gráfico listo.'},
+      {id:'chatgpt', rank:2, why:'El code interpreter de ChatGPT Plus analiza ficheros, crea gráficos y escribe fórmulas complejas.', tip:'Sube tu Excel → pídele "crea un dashboard con las métricas principales" → exporta como imagen.'},
+      {id:'claude',  rank:3, why:'Para entender patrones en datos complejos y escribir fórmulas o scripts de Python/R para análisis avanzado.', tip:'Pega unas filas de ejemplo y dile qué quieres calcular — escribirá la fórmula exacta para tu caso.'},
+    ]}},
+
+  // ── CREAR DOCUMENTO / INFORME / PROPUESTA ────────────────────────────────────
+  { match: q => has(q,'crear informe','hacer informe','hacer un informe','generar informe','crear reporte','hacer reporte','crear propuesta','hacer propuesta','crear documento','plantilla de','hacer una plantilla','informe de','propuesta de','memoria de','documentacion'),
+    result: { type:'recommend', summary:'Para crear documentos profesionales desde cero, Claude es el mejor asistente disponible.', recommendations:[
+      {id:'claude',  rank:1, why:'Genera informes completos, propuestas, memorias y documentos técnicos con estructura profesional. Solo describe el contenido y el tono.', tip:'"Crea un informe ejecutivo sobre [tema] de 3 páginas. Audiencia: [quién]. Incluye: resumen ejecutivo, análisis, conclusiones y próximos pasos".'},
+      {id:'chatgpt', rank:2, why:'Buena alternativa para documentos más cortos. Plan gratuito suficiente para la mayoría de casos.', tip:'Dale una estructura clara: "Quiero un documento con estas secciones: [1, 2, 3]. Extensión: [N] párrafos por sección".'},
+      {id:'gamma',   rank:3, why:'Si el documento va a convertirse en presentación, Gamma genera las dos cosas a la vez.', tip:'Describe el documento en Gamma y te genera tanto el texto como los slides de la presentación.'},
+    ]}},
+  { match: q => has(q,'diseño grafico','diseñar','logo','poster','flyer','banner','redes sociales','post para instagram','contenido visual','infografia','branding'),
+    result: { type:'recommend', summary:'Para diseño gráfico con IA, Canva es el punto de partida — potente y con generosos plan gratuito.', recommendations:[
+      {id:'canvaai',      rank:1, why:'Diseño completo con IA: genera imágenes, elimina fondos, redimensiona y crea contenido para redes. Plan gratis muy completo.', tip:'Usa "Magic Design" con una descripción de tu marca para generar 8 opciones de diseño en 10 segundos.'},
+      {id:'adobeexpress', rank:2, why:'Si tienes Adobe Creative Cloud, Express integra IA y comparte assets con Photoshop/Illustrator.', tip:'Usa las plantillas de Express para empezar rápido y exporta a Illustrator si necesitas más detalle.'},
+      {id:'ideogram',     rank:3, why:'Para la parte de generación de imágenes con texto incluido: logos, carteles, thumbnails.', tip:'Genera variantes del logo con diferentes estilos → importa el mejor a Canva para diseñar el resto de la marca.'},
+    ]}},
+
+  // ── REDACCIÓN — CREAR contenido ─────────────────────────────────────────────
+  { match: q => has(q,'redactar','escribir un email','escribir un informe','escribir un texto','escribir una carta','escribir un articulo','escribir un post','crear contenido','generar texto','escribir desde cero') && !has(q,'mejorar','corregir','revisar','corrector'),
+    result: { type:'recommend', summary:'Para redactar textos profesionales desde cero, Claude es el mejor asistente del mercado.', recommendations:[
+      {id:'claude',    rank:1, why:'El mejor en redacción de calidad: emails, informes, artículos, propuestas. Contexto enorme y tono ajustable. Entiende matices y escribe con naturalidad.', tip:'Dale contexto preciso: "Escribe un email para [destinatario] sobre [tema]. Tono: [formal/directo]. Objetivo: [acción que quieres conseguir]. Máximo [N] palabras".'},
+      {id:'chatgpt',   rank:2, why:'Rápido y versátil para textos cotidianos. El plan gratuito es muy generoso para emails y textos cortos.', tip:'Para emails rápidos: "Escribe un email profesional para [situación], tono directo, máximo 100 palabras".'},
+      {id:'jasper',    rank:3, why:'Especializado en copywriting de marketing: anuncios, landing pages, posts y email campaigns.', tip:'Usa las plantillas de Jasper para tu industria — ahorran mucho tiempo en textos de ventas.'},
+    ]}},
+
+  // ── REDACCIÓN — MEJORAR / REVISAR texto ──────────────────────────────────────
+  { match: q => has(q,'mejorar mi escritura','corregir','revisar mi texto','corrector','revisar ortografia','mejorar este texto','resumir','resumen de','analizar documento','analizar pdf','resumir pdf','parafrasear'),
+    result: { type:'recommend', summary:'Para mejorar y revisar textos, QuillBot y Grammarly son las herramientas más específicas.', recommendations:[
+      {id:'claude',    rank:1, why:'Para resumir documentos largos y analizar PDFs con profundidad. El contexto de 200k tokens es clave.', tip:'Para resumir un PDF: sube el archivo → "Resume los puntos clave en 5 bullets accionables con las conclusiones principales".'},
+      {id:'quillbot',  rank:2, why:'Parafraseo y reescritura de párrafos manteniendo el significado. Muy usado en ámbito académico.', tip:'Usa el modo "Fluency" para mejorar el flujo y el modo "Formal" para textos académicos.'},
+      {id:'grammarly', rank:3, why:'Corrección gramatical y de estilo en inglés en tiempo real, como extensión del navegador.', tip:'Instala la extensión → actívala en Gmail y Google Docs → te corrige automáticamente mientras escribes.'},
+    ]}},
+
+  // ── AUTOMATIZACIÓN ───────────────────────────────────────────────────────────
+  { match: q => has(q,'automatizar','automatizacion','flujos de trabajo','workflow','zapier','integrar apps','conectar apps','sin codigo automatizar','n8n','make'),
+    result: { type:'recommend', summary:'Para automatizar sin código, Make y Zapier son los referentes. Para control total, n8n.', recommendations:[
+      {id:'make',     rank:1, why:'Automatizaciones visuales más potentes que Zapier. Mejor precio y más flexibilidad.', tip:'Empieza con una automatización simple: "Cuando recibo un email con adjunto → guárdalo en Drive".'},
+      {id:'zapierai', rank:2, why:'El más fácil de usar. Entiende instrucciones en lenguaje natural para crear automatizaciones.', tip:'Describe la automatización en una frase: "Cuando se crea un deal en Salesforce, crea una tarea en Asana".'},
+      {id:'n8n',      rank:3, why:'Open source y self-hosteable. Sin límites, máxima privacidad y gratis si lo instalas tú.', tip:'Despliégalo en Railway o Render gratis: un JSON de tu workflow y corre sin coste indefinidamente.'},
+    ]}},
+
+  // ── TRADUCCIÓN ───────────────────────────────────────────────────────────────
+  { match: q => has(q,'traducir','traduccion','traducir documento','translate','pasar a ingles','pasar a español'),
+    result: { type:'recommend', summary:'DeepL sigue siendo el mejor en calidad de traducción, especialmente en pares europeos.', recommendations:[
+      {id:'deepl',        rank:1, why:'La mejor calidad de traducción automática, especialmente español-inglés y lenguas europeas.', tip:'Usa DeepL Write para mejorar textos en inglés nativamente, no solo traducir.'},
+      {id:'googletrans',  rank:2, why:'El más rápido para traducciones rápidas y soporta más idiomas (130+) que DeepL.', tip:'En Chrome, clic derecho → "Traducir al español" traduce cualquier página web al instante.'},
+      {id:'claude',       rank:3, why:'Para traducciones de documentos técnicos o legales que requieren contexto y precisión.', tip:'Pégale el texto + "Traduce manteniendo el tono formal y los términos técnicos originales entre paréntesis".'},
+    ]}},
+
+  // ── 3D ──────────────────────────────────────────────────────────────────────
+  { match: q => has(q,'modelo 3d','3d con ia','generar 3d','modelado 3d','asset 3d','textura 3d'),
+    result: { type:'recommend', summary:'Para modelos 3D con IA, Meshy es la mejor opción en calidad y facilidad.', recommendations:[
+      {id:'meshy',    rank:1, why:'Genera y texturiza modelos 3D desde texto o imágenes. 200 créditos gratis al mes.', tip:'Prueba "Image to 3D": sube una foto de producto y en 2 minutos tienes el modelo texturizado.'},
+      {id:'lumaai3d', rank:2, why:'Reconstruye objetos reales en 3D desde un vídeo girando alrededor del objeto.', tip:'Graba un vídeo de 15 segundos dando la vuelta al objeto → sube a Luma → modelo NeRF listo.'},
+    ]}},
+
+  // ── AVATARES / VÍDEOS CORPORATIVOS ─────────────────────────────────────────
+  { match: q => has(q,'avatar ia','presentador ia','video corporativo','video con avatar','doblaje labial','lip sync','hablar en otro idioma'),
+    result: { type:'recommend', summary:'Para vídeos con avatares IA, HeyGen lidera el mercado en calidad y multiidioma.', recommendations:[
+      {id:'heygen',    rank:1, why:'Crea vídeos con presentadores IA y traduce con sincronización de labios perfecta. 1 crédito gratis.', tip:'Sube un vídeo tuyo hablando → HeyGen lo traduce al inglés sincronizando tus labios automáticamente.'},
+      {id:'synthesia', rank:2, why:'Más opciones de avatares corporativos y plantillas para formación empresarial.', tip:'Usa una de sus 160+ avatares o crea el tuyo propio con 2 minutos de vídeo grabado.'},
+      {id:'did',       rank:3, why:'Anima fotos estáticas para crear presentaciones o personajes parlantes. El más barato.', tip:'Sube una foto de perfil + texto → D-ID genera un vídeo con la persona hablando el texto.'},
+    ]}},
+
+  // ── FOTOS DE PRODUCTO ────────────────────────────────────────────────────────
+  { match: q => has(q,'foto producto','fondo blanco','quitar fondo','eliminar fondo','ecommerce foto','amazon foto','foto profesional'),
+    result: { type:'recommend', summary:'Para fotos de producto, Photoroom genera imágenes profesionales desde una foto con el móvil.', recommendations:[
+      {id:'photoroom', rank:1, why:'Elimina el fondo y pone fondos profesionales con IA. Perfecto para ecommerce. 10 gratis al mes.', tip:'Haz la foto con buena luz natural → sube a Photoroom → elige el fondo blanco o de estudio → descarga.'},
+      {id:'removebg',  rank:2, why:'El más rápido para eliminar fondos solo. Sin más funciones pero instantáneo y gratuito.', tip:'Arrastra la imagen a remove.bg → descarga el PNG transparente en 3 segundos.'},
+      {id:'canvaai',   rank:3, why:'Para crear la ficha de producto completa con el fondo eliminado: añade textos, precios y marca.', tip:'Usa la función "Eliminar fondo" de Canva directamente + ajusta con sus herramientas de diseño.'},
+    ]}},
+
+];
+
+// ── Motor principal ────────────────────────────────────────────────────────────
+function searchLocal(query) {
+  const q = norm(query);
+  for (const rule of RULES) {
+    if (rule.match(q)) return rule.result;
+  }
+  // Fallback: búsqueda por similitud en descripciones de herramientas
+  return fallbackSearch(q);
+}
+
+function fallbackSearch(q) {
+  // Si la intención es claramente crear algo, Claude es el punto de partida
+  if (isCreating(q) && !isDev(q)) {
+    return { type:'recommend', summary:'Para crear contenido o documentos con IA, Claude suele ser la mejor opción de partida.', recommendations:[
+      {id:'claude',     rank:1, why:'El mejor para crear: documentos, textos, análisis, código, plantillas... Describe exactamente lo que quieres y lo genera.', tip:'Sé muy específico: formato, extensión, audiencia y tono. Cuanto más contexto, mejor resultado.'},
+      {id:'chatgpt',    rank:2, why:'Buena alternativa con plan gratuito generoso y acceso a imágenes, web y análisis de datos.', tip:'Útil cuando necesitas también buscar información o generar imágenes junto con el texto.'},
+      {id:'perplexity', rank:3, why:'Si necesitas crear algo basado en información actualizada o con fuentes verificadas.', tip:'Úsalo cuando el contenido requiera datos recientes o necesites citar fuentes.'},
+    ]};
+  }
+
+  // Scoring básico por palabras clave en nombre/categoría/descripción
+  const words = q.split(' ').filter(w => w.length > 3);
+  const scores = TOOLS.map(t => {
+    const hay = norm(t.name + ' ' + t.cat + ' ' + t.desc);
+    const score = words.filter(w => hay.includes(w)).length;
+    return { t, score };
+  }).filter(x => x.score > 0)
+    .sort((a,b) => b.score - a.score)
+    .slice(0,4);
+
+  if (scores.length === 0) {
+    return { type:'recommend', summary:'No encontré una regla específica para tu búsqueda. Aquí los asistentes generales más útiles:', recommendations:[
+      {id:'chatgpt',    rank:1, why:'El asistente más versátil para cualquier tarea general.', tip:'Sé específico: describe el contexto, el formato que quieres y a quién va dirigido.'},
+      {id:'claude',     rank:2, why:'Mejor en análisis, documentos largos y tareas que requieren razonamiento.', tip:'Ideal para tareas complejas. Dale el contexto completo para mejores resultados.'},
+      {id:'perplexity', rank:3, why:'Si necesitas información verificada con fuentes.', tip:'Úsalo para cualquier pregunta factual que necesite ser contrastada.'},
+    ]};
+  }
+
+  return {
+    type: 'recommend',
+    summary: 'Estas herramientas encajan con lo que describes:',
+    recommendations: scores.map((x,i) => ({
+      id: x.t.id,
+      rank: i+1,
+      why: x.t.desc,
+      tip: `Visita ${x.t.name} y prueba el plan gratuito${x.t.free ? ' (disponible)' : ''}.`,
+    }))
+  };
+}
+
+// ── handleSearch: IA real con Groq, fallback local si no hay conexión ────────
+async function handleSearch(overrideQuery) {
+  const query = (overrideQuery || document.getElementById('q').value).trim();
+  if (!query) { document.getElementById('q').focus(); return; }
+
+  setBtn(true);
+  hideErr();
+  document.getElementById('clarify').classList.remove('on');
+  document.getElementById('clarify').innerHTML = '';
+  document.getElementById('results').classList.remove('on');
+  document.getElementById('loading').classList.add('on');
+  startProgress();
+
+  try {
+    let parsed;
+    const isFile = window.location.protocol === 'file:';
+    if (!isFile) {
+      // Producción: usa IA real via Vercel proxy
+      parsed = await callAI(query);
+    } else {
+      // Fallback offline: motor de reglas
+      await new Promise(r => setTimeout(r, 500));
+      parsed = searchLocal(query);
+    }
+    endProgress(() => {
+      if (parsed.type === 'clarify') renderClarify(parsed, query);
+      else renderResults(query, parsed);
+    });
+  } catch(e) {
+    // Si la IA falla, cae al motor local sin que el usuario lo note
+    console.warn('AI fallback:', e.message);
+    try {
+      const parsed = searchLocal(query);
+      endProgress(() => {
+        if (parsed.type === 'clarify') renderClarify(parsed, query);
+        else renderResults(query, parsed);
+      });
+    } catch(e2) {
+      clearTimeout(progTimer);
+      document.getElementById('loading').classList.remove('on');
+      showErr('Error: ' + e2.message);
+    }
+  } finally {
+    setBtn(false);
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// CLARIFY — multi-select support
+// ────────────────────────────────────────────────────────────────────────────
+function renderClarify(data, origQuery) {
+  clarifyAnswers = {};
+  currentClarifyQuery = origQuery;   // ← stored safely, no inline JSON
+  const el = document.getElementById('clarify');
+
+  const qs = (data.questions||[]).map(q => {
+    clarifyAnswers[q.id] = [];
+    const hint = q.multi ? '<span style="font-size:.72rem;font-weight:400;color:var(--tx3);margin-left:6px">(puedes elegir varias)</span>' : '';
+    return `
+      <div class="cl-q">
+        <div class="cl-q-txt">${esc(q.text)}${hint}</div>
+        <div class="cl-opts">
+          ${(q.options||[]).map(opt => `
+            <div class="cl-opt" data-qid="${esc(q.id)}" data-val="${esc(opt.val||opt)}" data-multi="${q.multi?'1':'0'}" onclick="pickOpt(this)">
+              ${esc(opt.label||opt)}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="cl-intro">${esc(data.intro||'Un poco más de contexto para recomendarte lo mejor:')}</div>
+    ${qs}
+    <button id="clBtn" onclick="submitClarify()">Ver recomendaciones →</button>
+  `;
+  el.classList.add('on');
+  softScroll('clarify');
+}
+
+function pickOpt(el) {
+  const qid   = el.dataset.qid;
+  const val   = el.dataset.val;
+  const multi = el.dataset.multi === '1';
+
+  if (multi) {
+    el.classList.toggle('sel');
+    const arr = clarifyAnswers[qid] || [];
+    const idx = arr.indexOf(val);
+    if (idx > -1) arr.splice(idx,1); else arr.push(val);
+    clarifyAnswers[qid] = arr;
+  } else {
+    el.parentElement.querySelectorAll('.cl-opt').forEach(o => o.classList.remove('sel'));
+    el.classList.add('sel');
+    clarifyAnswers[qid] = [val];
+  }
+}
+
+async function submitClarify() {
+  const origQuery = currentClarifyQuery;
+  const contextParts = Object.entries(clarifyAnswers)
+    .map(([k,v]) => Array.isArray(v) ? v.join(' ') : v)
+    .filter(Boolean);
+  const enriched = origQuery + '. Contexto adicional: ' + contextParts.join(', ');
+
+  document.getElementById('clarify').classList.remove('on');
+  setBtn(true);
+  hideErr();
+  document.getElementById('loading').classList.add('on');
+  startProgress();
+
+  try {
+    let parsed;
+    const isFile = window.location.protocol === 'file:';
+    if (!isFile) {
+      parsed = await callAI(enriched, true); // true = no clarify, go straight to results
+    } else {
+      await new Promise(r => setTimeout(r, 400));
+      parsed = searchLocal(enriched);
+    }
+    endProgress(() => renderResults(origQuery, parsed));
+  } catch(e) {
+    console.warn('AI fallback:', e.message);
+    const parsed = searchLocal(enriched);
+    endProgress(() => renderResults(origQuery, parsed));
+  } finally {
+    setBtn(false);
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// RESULTS
+// ────────────────────────────────────────────────────────────────────────────
+function renderResults(query, data) {
+  const el   = document.getElementById('results');
+  const recs = (data.recommendations||[]).filter(r => MAP[r.id]);
+
+  el.innerHTML = `
+    <div class="res-header">
+      <div class="res-tag">Recomendaciones</div>
+      <div class="res-q">Para: <em>"${esc(query)}"</em></div>
+    </div>
+    <div class="res-sum">${esc(data.summary||'')}</div>
+    <div class="recs">
+      ${recs.map((r,i) => {
+        const t = MAP[r.id];
+        const isTop = r.rank === 1 || i === 0;
+        return `
+          <a href="${esc(t.url)}" target="_blank" rel="noopener" class="rec${isTop?' top':''}">
+            <div class="rec-badge">${isTop?'<span class="star">★</span> Mejor opción':'#'+r.rank}</div>
+            <div class="rec-head">
+              <div class="rec-ico">${t.emoji}</div>
+              <div>
+                <div class="rec-name">${esc(t.name)}</div>
+                <div class="rec-cat">${esc(t.cat)}</div>
+              </div>
+            </div>
+            <div class="rec-why">${esc(r.why)}</div>
+            <div class="rec-tip">→ ${esc(r.tip)}</div>
+            <div class="rec-pricing">
+              ${t.free ? '<span class="bdg free">✓ Plan gratis</span>' : '<span class="bdg paid">Solo de pago</span>'}
+              ${t.student ? '<span class="bdg stu">% Desc. estudiante</span>' : ''}
+            </div>
+          </a>`;
+      }).join('')}
+    </div>
+    <button class="new-q" onclick="resetSearch()">← Nueva búsqueda</button>
+  `;
+  el.classList.add('on');
+  softScroll('results');
+}
+
+function resetSearch() {
+  document.getElementById('results').classList.remove('on');
+  document.getElementById('clarify').classList.remove('on');
+  document.getElementById('q').value = '';
+  document.getElementById('q').focus();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// DIRECTORY
+// ────────────────────────────────────────────────────────────────────────────
+function renderStats() {
+  const cats = ALL_CATS.length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="stat-n">${TOOLS.length}</div><div class="stat-l">Herramientas</div></div>
+    <div class="stat"><div class="stat-n">${cats}</div><div class="stat-l">Categorías</div></div>
+    <div class="stat"><div class="stat-n">${TOOLS.filter(t=>t.free).length}</div><div class="stat-l">Con plan gratis</div></div>
+    <div class="stat"><div class="stat-n">${TOOLS.filter(t=>t.student).length}</div><div class="stat-l">Desc. estudiante</div></div>
+  `;
+  document.getElementById('hdrCnt').textContent = TOOLS.length + ' herramientas';
+  document.getElementById('dirSub').textContent = TOOLS.length + ' herramientas · ' + cats + ' categorías';
+}
+
+function renderFilters() {
+  document.getElementById('ftabs').innerHTML = ['Todas',...ALL_CATS].map((c,i) =>
+    `<button class="ftab${i===0?' on':''}" onclick="setFilter('${esc(c)}')">${esc(c)}</button>`
+  ).join('');
+}
+
+function setFilter(cat) {
+  document.querySelectorAll('.ftab').forEach(t => t.classList.toggle('on', t.textContent === cat));
+  document.querySelectorAll('.cat-block').forEach(b => b.classList.toggle('hidden', cat !== 'Todas' && b.dataset.cat !== cat));
+}
+
+function renderDir() {
+  const grouped = {};
+  TOOLS.forEach(t => { if(!grouped[t.cat]) grouped[t.cat]=[]; grouped[t.cat].push(t); });
+  document.getElementById('dirContent').innerHTML = Object.entries(grouped).map(([cat,tools]) => `
+    <div class="cat-block" data-cat="${esc(cat)}">
+      <div class="cat-lbl">${esc(cat)}</div>
+      <div class="tgrid">
+        ${tools.map(t => `
+          <div class="tcard" id="tc-${t.id}">
+            <div class="tchk" onclick="toggleCompare('${t.id}',event)">✓</div>
+            <a href="${esc(t.url)}" target="_blank" rel="noopener" style="display:block;text-decoration:none;color:inherit">
+              <div class="th"><span class="te">${t.emoji}</span><span class="tn">${esc(t.name)}</span></div>
+              <div class="td">${esc(t.desc)}</div>
+              <div class="tbdgs">
+                ${t.free ? '<span class="tbdg free">Gratis</span>' : '<span class="tbdg paid">De pago</span>'}
+                ${t.student ? '<span class="tbdg stu">Estudiante</span>' : ''}
+              </div>
+            </a>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// COMPARE — estático, sin API, instantáneo
+// ────────────────────────────────────────────────────────────────────────────
+function toggleCompare(id, e) {
+  e.stopPropagation();
+  const idx = compareList.indexOf(id);
+  if (idx > -1) {
+    compareList.splice(idx,1);
+    document.getElementById('tc-'+id)?.classList.remove('csel');
+  } else if (compareList.length < 2) {
+    compareList.push(id);
+    document.getElementById('tc-'+id)?.classList.add('csel');
+  } else {
+    const old = compareList[1];
+    document.getElementById('tc-'+old)?.classList.remove('csel');
+    compareList[1] = id;
+    document.getElementById('tc-'+id)?.classList.add('csel');
+  }
+  updateCmpBar();
+}
+
+function updateCmpBar() {
+  const bar = document.getElementById('cbar');
+  if (compareList.length === 0) { bar.classList.remove('on'); return; }
+  bar.classList.add('on');
+  document.getElementById('cbarInfo').textContent =
+    compareList.length === 1
+      ? MAP[compareList[0]]?.name + ' — selecciona otra'
+      : compareList.map(id=>MAP[id]?.name).join(' vs ');
+  document.getElementById('cbtn').disabled = compareList.length < 2;
+}
+
+function clearCompare() {
+  compareList.forEach(id => document.getElementById('tc-'+id)?.classList.remove('csel'));
+  compareList = [];
+  updateCmpBar();
+}
+
+function openCompare() {
+  if (compareList.length < 2) return;
+  const [a, b] = [MAP[compareList[0]], MAP[compareList[1]]];
+  const content = document.getElementById('cmodContent');
+
+  content.innerHTML = `
+    <div class="cmod-title">${esc(a.name)} vs ${esc(b.name)}</div>
+    <div class="cmod-heads">
+      <div class="cmod-th"><div class="cmod-te">${a.emoji}</div><div><div class="cmod-tn">${esc(a.name)}</div><div class="cmod-tc">${esc(a.cat)}</div></div></div>
+      <div class="cmod-th"><div class="cmod-te">${b.emoji}</div><div><div class="cmod-tn">${esc(b.name)}</div><div class="cmod-tc">${esc(b.cat)}</div></div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      <div class="cmod-cell"><strong>${esc(a.name)}</strong>${esc(a.desc)}<br><br><span style="font-size:.7rem;color:var(--ok-t);background:var(--ok-l);padding:2px 8px;border-radius:4px">${a.free?(a.freeTier||'Plan gratis'):'Solo de pago'}</span></div>
+      <div class="cmod-cell"><strong>${esc(b.name)}</strong>${esc(b.desc)}<br><br><span style="font-size:.7rem;color:var(--ok-t);background:var(--ok-l);padding:2px 8px;border-radius:4px">${b.free?(b.freeTier||'Plan gratis'):'Solo de pago'}</span></div>
+    </div>
+    <div class="cmod-loading" id="cmpLoading">
+      <div style="display:flex;justify-content:center;gap:6px;margin-bottom:10px">
+        <div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div>
+      </div>
+      Consultando benchmarks y estudios...
+    </div>
+  `;
+  document.getElementById('cmod').classList.add('on');
+
+  const SYS_COMPARE = `You are an AI tools expert. Compare two AI tools using real benchmark data, studies, and user reports where available (e.g. LMSYS Chatbot Arena, MMLU, HumanEval, Elo ratings, independent reviews). Be direct, opinionated, and data-driven. Use Spanish.
+Respond ONLY with valid JSON (no markdown, no backticks):
+{"verdict":"2 opinionated sentences on when to pick A vs B","sections":[{"label":"Mejor para","a":"...","b":"..."},{"label":"Rendimiento y datos reales","a":"mention benchmarks or studies","b":"mention benchmarks or studies"},{"label":"Precio real","a":"...","b":"..."},{"label":"Limitaciones","a":"...","b":"..."},{"label":"Conclusión","a":"...","b":"..."}]}`;
+
+  const prompt = `Compara en español con datos reales:
+A: ${a.name} (${a.cat}) — ${a.desc} | Precio: ${a.paid} | Plan gratis: ${a.free ? a.freeTier : 'No'}
+B: ${b.name} (${b.cat}) — ${b.desc} | Precio: ${b.paid} | Plan gratis: ${b.free ? b.freeTier : 'No'}`;
+
+  callClaude([{role:'user',content:prompt}], SYS_COMPARE).then(d => {
+    const loading = document.getElementById('cmpLoading');
+    if (loading) loading.remove();
+    const verdict = document.createElement('div');
+    verdict.className = 'cmod-verdict';
+    verdict.textContent = d.verdict || '';
+    content.appendChild(verdict);
+    (d.sections||[]).forEach(s => {
+      const sec = document.createElement('div');
+      sec.className = 'cmod-section';
+      sec.innerHTML = `<h4>${esc(s.label)}</h4><div class="cmod-grid"><div class="cmod-cell"><strong>${esc(a.name)}</strong>${esc(s.a)}</div><div class="cmod-cell"><strong>${esc(b.name)}</strong>${esc(s.b)}</div></div>`;
+      content.appendChild(sec);
+    });
+  }).catch(e => {
+    const loading = document.getElementById('cmpLoading');
+    if (loading) loading.innerHTML = `<span style="color:#B91C1C">Error: ${esc(e.message)}</span>`;
+  });
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// DAILY AI WIZARD — 4 preguntas, multi-select mejorado, resultado inmediato
+// ────────────────────────────────────────────────────────────────────────────
+const WIZ_STEPS = [
+  {
+    q: '¿Cuál es tu perfil principal?',
+    id: 'perfil', multi: false,
+    opts: [
+      {val:'estudiante',  ico:'🎓', l:'Estudiante',              s:'Trabajos, apuntes, TFG, investigación...'},
+      {val:'profesional', ico:'💼', l:'Profesional / oficina',   s:'Emails, reuniones, informes, presentaciones...'},
+      {val:'creativo',    ico:'🎨', l:'Creativo / creador',      s:'Vídeos, imágenes, música, redes sociales...'},
+      {val:'dev',         ico:'💻', l:'Desarrollador / técnico', s:'Código, datos, sistemas, automatización...'},
+    ]
+  },
+  {
+    q: '¿Para qué usas la IA? (elige todas las que apliquen)',
+    id: 'usos', multi: true,
+    opts: [
+      {val:'escribir',  ico:'✍️', l:'Escribir y redactar',           s:'Emails, documentos, resúmenes, ensayos'},
+      {val:'buscar',    ico:'🔍', l:'Buscar y verificar info',        s:'Noticias, datos, investigación con fuentes'},
+      {val:'reuniones', ico:'🎙', l:'Reuniones y llamadas',           s:'Transcribir, resumir, tomar notas automáticamente'},
+      {val:'codigo',    ico:'⌨️', l:'Programar o trabajar con datos', s:'Código, Excel avanzado, scripts, análisis'},
+      {val:'contenido', ico:'📸', l:'Crear contenido visual',         s:'Imágenes, vídeos, diseño, posts para redes'},
+      {val:'movil',     ico:'📱', l:'Usar desde el móvil',            s:'Consultas rápidas mientras estás en movimiento'},
+    ]
+  },
+  {
+    q: '¿Cuánto quieres invertir al mes?',
+    id: 'budget', multi: false,
+    opts: [
+      {val:'gratis', ico:'🆓', l:'Solo gratis',    s:'Quiero el máximo sin pagar nada'},
+      {val:'poco',   ico:'💰', l:'Hasta 20 €/mes', s:'Si vale la pena, lo pago'},
+      {val:'medio',  ico:'💳', l:'Hasta 50 €/mes', s:'Invierto si me ahorra tiempo real'},
+    ]
+  },
+  {
+    q: '¿Algo más que describa tu caso? (opcional, elige los que apliquen)',
+    id: 'estilo', multi: true,
+    opts: [
+      {val:'largo',   ico:'📄', l:'Trabajo con textos o análisis largos', s:'Documentos, informes, papers, libros'},
+      {val:'rapido',  ico:'⚡', l:'Necesito respuestas rápidas',          s:'Consultas cortas, dudas puntuales'},
+      {val:'privado', ico:'🔒', l:'La privacidad es importante',          s:'No quiero que guarden mis conversaciones'},
+      {val:'gsuite',  ico:'🔵', l:'Uso mucho Google Workspace',           s:'Gmail, Docs, Drive, Meet'},
+      {val:'m365',    ico:'🪟', l:'Uso mucho Microsoft 365',              s:'Outlook, Word, Teams, Excel'},
+    ]
+  },
+];
+
+let wizStep = 0;
+let wizAnswers = {};
+
+function openDailyWiz() {
+  wizStep = 0;
+  wizAnswers = {};
+  WIZ_STEPS.forEach(s => { wizAnswers[s.id] = s.multi ? [] : null; });
+  const wiz = document.getElementById('dailyWiz');
+  wiz.classList.add('on');
+  renderWizStep();
+  wiz.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function renderWizStep() {
+  const wiz = document.getElementById('dailyWiz');
+  const step = WIZ_STEPS[wizStep];
+  const dots = WIZ_STEPS.map((_,i) => `<div class="wiz-dot${i<=wizStep?' done':''}"></div>`).join('');
+
+  const opts = step.opts.map(o => {
+    const selVal = wizAnswers[step.id];
+    const isSel = step.multi ? (selVal||[]).includes(o.val) : selVal === o.val;
+    return `
+      <div class="wiz-opt${isSel?' sel':''}" onclick="wizPick('${step.id}','${o.val}',${step.multi})">
+        <span class="wiz-opt-ico">${o.ico}</span>
+        <div>
+          <div class="wiz-opt-txt">${esc(o.l)}</div>
+          ${o.s ? `<div class="wiz-opt-sub">${esc(o.s)}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+
+  const isLast = wizStep === WIZ_STEPS.length - 1;
+  const backBtn = wizStep > 0
+    ? `<button class="wiz-back" onclick="wizBack()">← Atrás</button>`
+    : `<div></div>`;
+
+  wiz.innerHTML = `
+    <div class="wiz-prog">${dots}</div>
+    <div class="wiz-q">${esc(step.q)}</div>
+    <div class="wiz-opts">${opts}</div>
+    <div class="wiz-nav">
+      ${backBtn}
+      <button class="wiz-next" id="wizNext" onclick="${isLast ? 'wizFinish()' : 'wizNext()'}"
+        ${hasWizAnswer(step) ? '' : 'disabled'}>
+        ${isLast ? 'Ver mi stack →' : 'Siguiente →'}
+      </button>
+    </div>
+  `;
+}
+
+function hasWizAnswer(step) {
+  const v = wizAnswers[step.id];
+  return step.multi ? (v && v.length > 0) : v !== null;
+}
+
+function wizPick(id, val, multi) {
+  if (multi) {
+    const arr = wizAnswers[id] || [];
+    const idx = arr.indexOf(val);
+    if (idx > -1) arr.splice(idx,1); else arr.push(val);
+    wizAnswers[id] = arr;
+  } else {
+    wizAnswers[id] = val;
+  }
+  renderWizStep();
+}
+
+function wizBack() { wizStep--; renderWizStep(); }
+function wizNext()  { wizStep++; renderWizStep(); }
+
+function wizFinish() {
+  const {perfil, usos, budget, estilo} = wizAnswers;
+  const free    = budget === 'gratis';
+  const usosArr   = usos   || [];
+  const estiloArr = estilo || [];
+  const stack   = [];
+
+  // ── Asistente principal ────────────────────────────────────────────────
+  // Claude es la mejor opción para escritura larga, análisis y tareas complejas
+  const needsDeepThinking = usosArr.includes('escribir') || usosArr.includes('codigo') || estiloArr.includes('largo');
+  const usesGsuite  = estiloArr.includes('gsuite');
+  const usesM365    = estiloArr.includes('m365');
+  const wantsPrivacy = estiloArr.includes('privado');
+
+  if (wantsPrivacy) {
+    stack.push({id:'mistral', role:'Asistente principal', use:'El más respetuoso con tu privacidad: modelos europeos, servidores en la UE, sin tracking.'});
+  } else if (usesGsuite) {
+    stack.push({id:'gemini',  role:'Asistente principal', use:'Integrado con Gmail, Docs y Drive. Actívalo en Google Workspace con un clic.'});
+    // pero también Claude como segundo asistente si hace análisis
+    if (needsDeepThinking && !free) stack.push({id:'claude', role:'Para análisis y textos profundos', use:'Mejor que Gemini para redactar documentos largos, analizar PDFs y razonar sobre datos complejos.'});
+  } else if (usesM365) {
+    stack.push({id:'copilot', role:'Asistente principal', use:'Integrado en Word, Excel, Teams y Outlook. Alt+I te lo activa en cualquier app de Microsoft.'});
+    if (needsDeepThinking && !free) stack.push({id:'claude', role:'Para análisis y textos profundos', use:'Copilot es cómodo en Office, pero Claude gana en razonamiento complejo y redacción de calidad.'});
+  } else if (needsDeepThinking && !free) {
+    stack.push({id:'claude',  role:'Asistente principal', use:'El mejor en razonamiento, análisis de documentos y escritura de calidad. Contexto de 200k tokens.'});
+  } else if (perfil === 'dev') {
+    stack.push({id:'claude',  role:'Asistente principal', use:'Top en benchmarks de código (HumanEval). Ideal para revisar PRs, explicar código y generar tests.'});
+  } else {
+    stack.push({id:'chatgpt', role:'Asistente principal', use:'El más versátil. Plan gratuito muy generoso con GPT-4o mini. Plugins y análisis de datos incluidos.'});
+  }
+
+  // ── Búsqueda ────────────────────────────────────────────────────────────
+  if (usosArr.includes('buscar')) {
+    stack.push({id:'perplexity', role:'Búsqueda con fuentes', use:'Cita las fuentes siempre. Ideal para noticias, datos verificados y research rápido. Reemplaza Google.'});
+  }
+
+  // ── Reuniones ───────────────────────────────────────────────────────────
+  if (usosArr.includes('reuniones')) {
+    stack.push({id:'fathom', role:'Notas de reuniones', use:'Se instala en Zoom en 2 min. Resume automáticamente cada llamada y te manda los action items. Gratis.'});
+  }
+
+  // ── Código ──────────────────────────────────────────────────────────────
+  if (perfil === 'dev' || usosArr.includes('codigo')) {
+    if (free) stack.push({id:'windsurf', role:'Editor de código con IA', use:'El agente Cascade es el más potente en plan gratuito. Mejor que Copilot sin pagar.'});
+    else      stack.push({id:'cursor',   role:'Editor de código con IA',  use:'Vale los $20/mes. Edición en lenguaje natural de proyectos enteros. El estándar actual.'});
+  }
+
+  // ── Estudiante ──────────────────────────────────────────────────────────
+  if (perfil === 'estudiante') {
+    stack.push({id:'notebooklm', role:'Estudio e investigación', use:'Sube PDFs, apuntes o webs y hazle preguntas. Genera podcasts de audio de tus temas. 100% gratis.'});
+  }
+
+  // ── Profesional con escritura ────────────────────────────────────────────
+  if (perfil === 'profesional' && usosArr.includes('escribir') && !free) {
+    if (!stack.find(s=>s.id==='claude')) {
+      stack.push({id:'claude', role:'Redacción y análisis', use:'Para informes, emails importantes o analizar documentos. Mucho mejor que ChatGPT en textos largos.'});
+    }
+  }
+
+  // ── Móvil ────────────────────────────────────────────────────────────────
+  if (usosArr.includes('movil')) {
+    // Recomendar la app móvil del asistente principal ya recomendado
+    const main = stack[0];
+    if (main?.id === 'claude') {
+      stack.push({id:'chatgpt', role:'Para el móvil (rápido)', use:'La app de ChatGPT es la más pulida para uso móvil: modo voz, búsqueda integrada y respuesta inmediata.'});
+    }
+  }
+
+  // ── Contenido visual ─────────────────────────────────────────────────────
+  if (perfil === 'creativo' || usosArr.includes('contenido')) {
+    stack.push({id:'canvaai', role:'Diseño y contenido visual', use:free ? 'Plan gratis muy completo: Magic Write, generación de imágenes y plantillas pro.' : 'Pro a 14.99€/mes. Fondo mágico, eliminación de objetos y brand kit.'});
+  }
+
+  // ── Fallback: asegurar mínimo 3 ─────────────────────────────────────────
+  if (!stack.find(s=>s.id==='perplexity') && stack.length < 4) {
+    stack.push({id:'perplexity', role:'Búsqueda verificada', use:'Para cualquier búsqueda que necesite fuentes reales. Mucho más fiable que Google para preguntas complejas.'});
+  }
+  if (!stack.find(s=>s.id==='notebooklm') && stack.length < 4) {
+    stack.push({id:'notebooklm', role:'Documentos y PDFs', use:'Sube cualquier PDF o enlace y conversa con su contenido. Imprescindible. Gratis.'});
+  }
+
+  const finalStack = stack.slice(0,5).filter(s => MAP[s.id]);
+  const perfilLabel = WIZ_STEPS[0].opts.find(o=>o.val===perfil)?.l || perfil;
+
+  document.getElementById('dailyWiz').innerHTML = `
+    <div style="margin-bottom:20px">
+      <div class="res-tag">Tu stack IA del día a día</div>
+      <div style="font-size:1rem;font-weight:500;color:var(--tx);margin-top:4px">
+        Para: <em style="color:var(--ac);font-style:normal">${esc(perfilLabel)}</em>
+      </div>
+    </div>
+    <div class="stack-grid">
+      ${finalStack.map(s => {
+        const t = MAP[s.id];
+        return `
+          <a href="${esc(t.url)}" target="_blank" rel="noopener" class="stack-card">
+            <div class="stack-role">${esc(s.role)}</div>
+            <div class="stack-head">
+              <span class="stack-ico">${t.emoji}</span>
+              <span class="stack-name">${esc(t.name)}</span>
+            </div>
+            <div class="stack-use">${esc(s.use)}</div>
+            <div style="margin-top:9px;display:flex;gap:5px">
+              ${t.free ? '<span class="tbdg free">Gratis</span>' : '<span class="tbdg paid">De pago</span>'}
+              ${t.student ? '<span class="tbdg stu">Estudiante</span>' : ''}
+            </div>
+          </a>`;
+      }).join('')}
+    </div>
+    <button class="wiz-restart" onclick="openDailyWiz()">← Repetir test</button>
+  `;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// PILLS
+// ────────────────────────────────────────────────────────────────────────────
+const EXAMPLES = [
+  "buscar noticias con fuentes verificadas",
+  "hacer presentaciones para el trabajo",
+  "generar imágenes artísticas",
+  "escribir y depurar código",
+  "transcribir reuniones automáticamente",
+  "crear música original",
+  "editar mi podcast",
+  "clonar mi voz",
+  "automatizar tareas sin código",
+  "analizar datos de un Excel",
+  "hacer apuntes o notas",
+  "traducir documentos técnicos",
+  "crear vídeos con avatares IA",
+  "diseñar el logo de mi startup",
+  "buscar papers científicos",
+  "generar modelos 3D desde texto",
+];
+
+function renderPills() {
+  document.getElementById('pills').innerHTML = EXAMPLES
+    .map(e => `<button class="pill" onclick="usePill(this)">${esc(e)}</button>`).join('');
+}
+function usePill(btn) {
+  document.getElementById('q').value = btn.textContent;
+  handleSearch();
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// EVENTS + INIT
+// ────────────────────────────────────────────────────────────────────────────
+document.getElementById('q').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSearch(); }
+});
+document.getElementById('findBtn').addEventListener('click', () => handleSearch());
+document.getElementById('cbtn').addEventListener('click', openCompare);
+document.getElementById('cclear').addEventListener('click', clearCompare);
+document.getElementById('cmodX').addEventListener('click', () => document.getElementById('cmod').classList.remove('on'));
+document.getElementById('cmod').addEventListener('click', e => {
+  if (e.target === document.getElementById('cmod')) document.getElementById('cmod').classList.remove('on');
+});
+
+renderPills();
+renderStats();
+renderFilters();
+renderDir();
+</script>
+</body>
+</html>
