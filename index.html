@@ -577,35 +577,28 @@ Ejemplos donde Claude es #1 o #2:
 - Emails, redacción → claude #1
 - Ideas, brainstorming → claude #1
 
-## CUÁNDO PREGUNTAR POR PRESUPUESTO
-Si Claude es relevante para la tarea (casi siempre), pregunta primero si el usuario tiene plan gratuito o de pago, porque:
-- Claude gratis: limitado en mensajes diarios
-- Claude Pro (20€/mes): sin límites, subida de archivos, mejor para tareas intensivas
-Esta pregunta determina qué recomendar como principal vs alternativa.
+## CUÁNDO PREGUNTAR POR PRESUPUESTO — OBLIGATORIO
+Antes de recomendar Claude, ChatGPT o Perplexity Pro, DEBES preguntar si tiene plan de pago o gratis. Esta pregunta es OBLIGATORIA porque la respuesta cambia completamente la recomendación:
+- Con plan de pago → Claude Pro o ChatGPT Plus como principal
+- Solo gratis → alternativas gratuitas o Claude con límites explicados
 
-Pregunta por presupuesto SIEMPRE que la tarea encaje con Claude, ChatGPT o Perplexity Pro.
+EJEMPLOS donde DEBES clarificar antes de recomendar:
+- "quiero hacer un Excel" → pregunta plan
+- "escríbeme un informe" → pregunta plan  
+- "resumir un documento" → pregunta plan
+- "hacer código" → pregunta plan
+- "hacer una presentación" → recomienda directamente Gamma (es gratis y específico)
+- "buscar información" → recomienda directamente Perplexity (no preguntes)
+- "generar imágenes" → pregunta qué tipo de imagen
 
-## HERRAMIENTAS — cuándo usarlas vs NO
-- julius/chatcsv: SOLO si el usuario dice "tengo datos", "mi Excel existente", "analizar mis datos"
-- notionai: SOLO si el usuario menciona que usa Notion
-- grammarly/quillbot: SOLO para corrección de inglés específicamente
-- jasper/copyai/surferseo: SOLO para marketing profesional o SEO
-- bolt/lovable: SOLO si no sabe programar y quiere una app web completa
-- v0: SOLO para componentes UI aislados en React
-- cursor/windsurf: SOLO si ya tiene un proyecto de código existente
-- n8n/make/zapier: SOLO para automatización de flujos entre apps
-NO recomiendes herramientas de nicho técnico cuando Claude o ChatGPT pueden hacer lo mismo más fácil.
-
-## MÁXIMO 3 RECOMENDACIONES
-Recomienda 3 herramientas como máximo. Calidad sobre cantidad.
-
-## CUÁNDO CLARIFICAR
-Pregunta UNA sola cosa solo si la respuesta cambiaría completamente la recomendación:
-- ¿Tiene plan de pago o solo gratis? (si Claude/ChatGPT son relevantes)
-- ¿Sabe programar? (si la tarea es "hacer una web/app")
-- ¿Tiene los datos ya o quiere crearlos desde cero? (solo si no está claro)
-
-NO preguntes por el ecosistema (Google/Microsoft) — es demasiado restrictivo.
+## CUÁNDO IR DIRECTO SIN PREGUNTAR
+Solo recomienda directamente cuando la herramienta correcta es obvia e igual con o sin pago:
+- Búsqueda de noticias/info → Perplexity directo
+- Transcribir reuniones → Fathom directo  
+- Música → Suno directo
+- Vídeo corto/reels → Captions directo
+- Traducir → DeepL directo
+- Eliminar fondo de foto → Remove.bg directo
 
 ## FORMATO (JSON válido, sin markdown, sin backticks)
 
@@ -896,7 +889,31 @@ const RULES = [
       {id:'framer',    rank:3, why:'Para prototipar el diseño visualmente antes de pasar a código.', tip:'Crea el prototipo en Framer y usa el panel de código para exportar a React.'},
     ]}},
 
-  // ── EXCEL — CREAR desde cero → pregunta presupuesto primero
+  // ── PREGUNTA PRESUPUESTO — regla genérica para tareas que usan Claude ──────
+  // Se dispara cuando hay intención de crear/analizar pero no hay regla más específica
+  { match: q => has(q,'escribir','redactar','resumir','analizar','documento','informe','propuesta','codigo','programar','script','chatgpt','claude') && !has(q,'excel','spreadsheet','presentacion','imagen','video','musica','traducir','buscar','noticias','reunion','transcribir'),
+    result: { type:'clarify', intro:'La mejor opción depende de si tienes un plan de pago o usas solo herramientas gratuitas:', questions:[
+      { id:'plan', text:'¿Usas Claude Pro o ChatGPT Plus (planes de pago)?', multi:false, options:[
+        {val:'pago',   label:'Sí, tengo plan de pago'},
+        {val:'gratis', label:'No, solo uso planes gratuitos'},
+      ]}
+    ]}},
+
+  // ── POST-CLARIFY: plan pago → Claude ─────────────────────────────────────
+  { match: q => has(q,'pago') && !has(q,'excel','spreadsheet') && has(q,'escribir','redactar','analizar','documento','informe','codigo','programar','script','resumir'),
+    result: { type:'recommend', summary:'Con plan de pago, Claude es la mejor opción — sin límites y con subida de archivos.', recommendations:[
+      {id:'claude',  rank:1, why:'Sin límites diarios, contexto de 200k tokens, puedes subir archivos. El mejor en razonamiento, escritura y código.', tip:'Nueva conversación → describe exactamente lo que necesitas con todo el contexto posible.'},
+      {id:'chatgpt', rank:2, why:'Buena alternativa con Code Interpreter, imágenes y búsqueda web integrados.', tip:'Usa "Adjuntar archivo" para analizar documentos o Code Interpreter para datos.'},
+    ]}},
+
+  // ── POST-CLARIFY: plan gratis → mejores opciones gratuitas ───────────────
+  { match: q => has(q,'gratis') && !has(q,'excel','spreadsheet') && has(q,'escribir','redactar','analizar','documento','informe','codigo','programar','script','resumir'),
+    result: { type:'recommend', summary:'Con plan gratuito, Claude y ChatGPT siguen siendo muy útiles con límites diarios.', recommendations:[
+      {id:'claude',     rank:1, why:'El plan gratis tiene límite diario pero cubre bien la mayoría de tareas. Escribe prompts completos para aprovechar cada conversación.', tip:'Sé específico desde el primer mensaje — ahorra turnos y aprovecha el límite al máximo.'},
+      {id:'chatgpt',    rank:2, why:'GPT-4o mini es gratis e ilimitado. Buena calidad para textos, emails y respuestas rápidas.', tip:'Cuando Claude llegue al límite, cambia a ChatGPT con GPT-4o mini para continuar.'},
+      {id:'notebooklm', rank:3, why:'100% gratis y sin límites para documentos y PDFs.', tip:'Sube tus documentos a notebooklm.google.com y pregúntale directamente sobre el contenido.'},
+    ]}},
+
   { match: q => has(q,'excel','spreadsheet','hoja de calculo') && !isAnalyzing(q),
     result: { type:'clarify', intro:'Claude puede crear el Excel completo por ti. ¿Qué plan tienes?', questions:[
       { id:'plan', text:'¿Usas Claude o ChatGPT de pago?', multi:false, options:[
