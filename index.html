@@ -425,7 +425,10 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
 // student: true = descuento/plan gratuito verificado para estudiantes
 // ────────────────────────────────────────────────────────────────────────────
 const RAW = [
-// ── Búsqueda e Investigación ─────────────────────────────────────────────
+// ── Privacidad / Local ────────────────────────────────────────────────────
+["ollama","Ollama","🦙","Privacidad e IA Local","https://ollama.com","Corre modelos de IA (Llama, Mistral, DeepSeek...) completamente en local. Sin internet, sin datos enviados a nadie. La opción más privada que existe.",true,"100% gratis y open source","Gratis — requiere ordenador con suficiente RAM",false],
+["openwebui","Open WebUI","🖥️","Privacidad e IA Local","https://openwebui.com","Interfaz web para Ollama. Igual que ChatGPT pero corriendo en tu máquina local. 100% privado.",true,"100% gratis y open source","Gratis — self-hosted",false],
+["lmstudio","LM Studio","💻","Privacidad e IA Local","https://lmstudio.ai","Descarga y corre modelos LLM en tu PC con interfaz gráfica. Sin terminal, sin configuración técnica.",true,"100% gratis","Gratis",false],
 ["perplexity","Perplexity","🔍","Búsqueda","https://perplexity.ai","Búsquedas en tiempo real con fuentes citadas y verificadas. El Google mejorado con IA.",true,"Básico ilimitado, 5 Pro/día","Pro: $20/mes",false],
 ["youcom","You.com","🌐","Búsqueda","https://you.com","Motor de búsqueda con IA, modo privado y múltiples modelos integrados.",true,"Gratis con límites","YouPro: $15/mes",false],
 ["consensus","Consensus","📊","Búsqueda","https://consensus.app","Sintetiza resultados de papers científicos. Ideal para investigación académica.",true,"10 búsquedas/mes","Premium: $9.99/mes",false],
@@ -726,7 +729,21 @@ function isNoCode(q) {
 // ── Definición de reglas ──────────────────────────────────────────────────────
 const RULES = [
 
-  // ── BÚSQUEDA ────────────────────────────────────────────────────────────────
+  // ── PRIVACIDAD / IA LOCAL ────────────────────────────────────────────────────
+  { match: q => has(q,'privada','privado','sin historial','sin guardar','sin datos','local','offline','modelos locales','ia local','instalar en local','sin nube','open source ia','llama','hugging'),
+    result: { type:'recommend', summary:'Para máxima privacidad, la opción real es correr modelos en local con Ollama — nada sale de tu ordenador.', recommendations:[
+      {id:'ollama',  rank:1, why:'Corre Llama 3, Mistral, DeepSeek o cualquier modelo en tu PC sin internet. 0 datos enviados a nadie. La opción más privada que existe.', tip:'Instala desde ollama.com → escribe: ollama run llama3.2 — en 5 minutos tienes IA corriendo en local completamente offline.'},
+      {id:'mistral', rank:2, why:'Si prefieres la nube, Mistral es el más privado: servidores europeos bajo GDPR, sin tracking, sin usar tus datos para entrenar.', tip:'En mistral.ai activa "No training" en Settings — tus conversaciones no se usan para entrenar el modelo.'},
+      {id:'lmstudio',rank:3, why:'Como Ollama pero con interfaz gráfica. Sin terminal, sin comandos. Descarga y chatea directamente.', tip:'Descarga LM Studio → busca "Mistral 7B" → descarga → usa como ChatGPT pero en tu ordenador.'},
+    ]}},
+
+  // ── OLLAMA / MODELOS EN LOCAL ─────────────────────────────────────────────
+  { match: q => has(q,'ollama','correr en local','instalar modelos','modelos en mi pc','sin conexion','completamente privado','deepseek local','llama local','openwebui','lm studio'),
+    result: { type:'recommend', summary:'Para correr IA completamente en local (sin internet, sin datos enviados a nadie), Ollama es el estándar.', recommendations:[
+      {id:'ollama',    rank:1, why:'Descarga modelos como Llama 3, Mistral o DeepSeek y córrelos en tu PC sin internet. 0 datos salen de tu máquina. Comando único para empezar.', tip:'Instala desde ollama.com → ollama pull llama3.2 → ollama run llama3.2. En 5 minutos tienes un LLM corriendo en local.'},
+      {id:'lmstudio',  rank:2, why:'Como Ollama pero con interfaz gráfica. Sin terminal, sin configuración. Ideal si no quieres usar la línea de comandos.', tip:'Descarga LM Studio → busca "Llama 3.2" o "Mistral" → descarga → chatéa directamente desde la app.'},
+      {id:'openwebui', rank:3, why:'Interfaz web tipo ChatGPT que conecta con Ollama. La experiencia más parecida a ChatGPT pero completamente en local.', tip:'Instala Ollama primero → luego Open WebUI con Docker: docker run -p 3000:8080 ghcr.io/open-webui/open-webui'},
+    ]}},
   { match: q => has(q,'buscar noticias','noticias recientes','noticias de','informacion reciente','buscar rapido','buscar de forma fiable','buscar cosas','buscar informacion','verificar informacion','fuentes fiables','fuentes verificadas','contrastar'),
     result: { type:'recommend', summary:'Para búsquedas fiables con fuentes citadas, Perplexity es la mejor opción del mercado.', recommendations:[
       {id:'perplexity', rank:1, why:'Cita las fuentes en cada respuesta. Navega la web en tiempo real. El Google mejorado con IA.', tip:'Escribe tu pregunta como lo harías a un experto, no como en Google. Activa "Academic" para investigación.'},
