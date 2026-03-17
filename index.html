@@ -785,10 +785,10 @@ const RULES = [
 
   // ── PRESENTACIONES ───────────────────────────────────────────────────────────
   { match: q => has(q,'presentacion','presentaciones','hacer slides','hacer diapositivas','powerpoint','pitch deck','deck para'),
-    result: { type:'recommend', summary:'Gamma genera presentaciones profesionales desde texto en segundos — mucho más rápido que PowerPoint.', recommendations:[
-      {id:'gamma',       rank:1, why:'Genera una presentación completa desde un párrafo de texto. Diseño automático siempre correcto.', tip:'Escríbele: "Crea una presentación de 10 slides sobre [tema] para [audiencia]" y ajusta el tono.'},
-      {id:'beautifulai', rank:2, why:'Slides que se rediseñan solas al añadir contenido. Para equipos que hacen muchas presentaciones.', tip:'Empieza con una plantilla de tu industria para ahorrar tiempo en el diseño inicial.'},
-      {id:'tome',        rank:3, why:'Presentaciones más narrativas, tipo web interactiva. Ideal para propuestas y storytelling.', tip:'Úsalo cuando quieras una presentación que se lea como una historia, no como un listado de bullets.'},
+    result: { type:'recommend', summary:'Gamma genera presentaciones desde texto en segundos. Manus las hace completas y muy bien si describes bien el contexto.', recommendations:[
+      {id:'gamma', rank:1, why:'Genera una presentación completa desde un párrafo de texto. Diseño automático siempre correcto. La opción más rápida.', tip:'Escríbele: "Crea una presentación de 10 slides sobre [tema] para [audiencia]" y ajusta el tono.'},
+      {id:'manus', rank:2, why:'Agente IA que diseña presentaciones enteras con investigación incluida. Las hace muy bien — estructura, contenido y diseño en un solo paso.', tip:'Describe el contexto completo: tema, audiencia, objetivo y tono. Manus investiga y genera la presentación entera.'},
+      {id:'beautifulai', rank:3, why:'Slides que se rediseñan solas. Para equipos que hacen presentaciones frecuentes y quieren consistencia visual.', tip:'Empieza con una plantilla de tu industria para ahorrar tiempo en el diseño inicial.'},
     ]}},
 
   // ── IMÁGENES ARTÍSTICAS ──────────────────────────────────────────────────────
