@@ -34,6 +34,32 @@ header{background:var(--surface);border-bottom:1px solid var(--bd);position:stic
 .hdr-cnt{font-size:.75rem;font-weight:400;color:var(--tx3);white-space:nowrap}
 .bmc-hdr{display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:500;color:var(--tx2);border:1px solid var(--bd);border-radius:20px;padding:6px 14px;transition:all .15s}
 .bmc-hdr:hover{border-color:var(--ac);color:var(--ac)}
+.key-btn{display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:500;border:1px solid var(--bd);border-radius:20px;padding:6px 14px;cursor:pointer;transition:all .15s;background:transparent;font-family:var(--f)}
+.key-btn.has-key{color:var(--ok);border-color:var(--ok-l)}
+.key-btn.no-key{color:var(--warn);border-color:var(--warn-l);animation:pulse-warn 2s ease-in-out infinite}
+@keyframes pulse-warn{0%,100%{opacity:1}50%{opacity:.6}}
+.key-btn:hover{border-color:var(--ac);color:var(--ac);animation:none}
+
+/* ─── KEY MODAL ─── */
+#keyModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:center;justify-content:center;padding:20px}
+#keyModal.on{display:flex}
+.key-box{background:var(--surface);border-radius:16px;padding:28px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.key-title{font-weight:700;font-size:1.1rem;margin-bottom:6px}
+.key-sub{font-size:.85rem;color:var(--tx2);line-height:1.6;margin-bottom:20px}
+.key-sub a{color:var(--ac);text-decoration:none}
+.key-sub a:hover{text-decoration:underline}
+.key-row{display:flex;gap:8px;margin-bottom:14px}
+#keyInput{flex:1;padding:11px 14px;border:1.5px solid var(--bd);border-radius:var(--rs);font-family:var(--f);font-size:.88rem;color:var(--tx);background:var(--bg);outline:none;transition:border-color .2s}
+#keyInput:focus{border-color:var(--ac)}
+#keyInput::placeholder{color:var(--tx3)}
+.key-save{background:var(--ac);color:#fff;border:none;border-radius:var(--rs);padding:11px 18px;font-family:var(--f);font-weight:600;font-size:.88rem;cursor:pointer;white-space:nowrap;transition:background .15s}
+.key-save:hover{background:var(--ac-h)}
+.key-note{font-size:.75rem;color:var(--tx3);line-height:1.5}
+.key-remove{background:transparent;border:none;font-size:.75rem;color:var(--tx3);cursor:pointer;padding:0;margin-top:10px;text-decoration:underline}
+.key-remove:hover{color:var(--tx2)}
+.key-status{font-size:.78rem;padding:6px 10px;border-radius:6px;margin-bottom:12px;display:none}
+.key-status.ok{background:var(--ok-l);color:var(--ok-t);display:block}
+.key-status.err{background:#FEF2F2;color:#B91C1C;display:block}
 
 /* ─── HERO ─── */
 .hero{padding:88px 0 64px;text-align:center}
@@ -188,7 +214,25 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
 .foot-bmc{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:500;color:var(--tx2);border:1px solid var(--bd);border-radius:20px;padding:6px 14px;transition:all .15s}
 .foot-bmc:hover{border-color:var(--ac);color:var(--ac)}
 
-/* ─── DAILY AI ──────────────────────────────────────────────────────────── */
+/* ─── FOUNDER PICKS ─────────────────────────────────────────────────────── */
+.founder-section{padding:52px 0 48px}
+.founder-wrap{display:grid;grid-template-columns:1fr 2fr;gap:48px;align-items:start}
+.founder-eyebrow{font-size:.68rem;font-weight:600;color:var(--ac);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.founder-title{font-weight:700;font-size:1.5rem;letter-spacing:-.3px;margin-bottom:10px;line-height:1.2}
+.founder-sub{font-size:.88rem;color:var(--tx2);line-height:1.7}
+.founder-picks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.fpick{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);padding:18px;text-decoration:none;color:inherit;display:block;transition:all .18s}
+.fpick:hover{border-color:var(--ac-m);transform:translateY(-2px);box-shadow:0 6px 20px rgba(79,70,229,.07)}
+.fpick-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.fpick-ico{font-size:1.1rem}
+.fpick-name{font-weight:700;font-size:.95rem;flex:1}
+.fpick-badge{font-size:.6rem;font-weight:600;color:var(--ac);background:var(--ac-l);padding:3px 8px;border-radius:4px;white-space:nowrap}
+.fpick-desc{font-size:.8rem;color:var(--tx2);line-height:1.6}
+@media(max-width:760px){
+  .founder-wrap{grid-template-columns:1fr}
+  .founder-picks{grid-template-columns:1fr}
+  .gap-12{gap:12px}
+}
 .daily-btn-wrap{text-align:center;padding:52px 0 44px}
 .daily-btn{display:inline-flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--bd);border-radius:14px;padding:16px 28px;font-family:var(--f);font-size:.95rem;font-weight:600;color:var(--tx);cursor:pointer;transition:all .2s}
 .daily-btn:hover{border-color:var(--ac);color:var(--ac);transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,70,229,.1)}
@@ -245,6 +289,7 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
       <div></div>
       <div class="hdr-r">
         <span class="hdr-cnt" id="hdrCnt"></span>
+        <button class="key-btn no-key" id="keyBtn" onclick="openKeyModal()">⚡ Activar IA</button>
         <a class="bmc-hdr" href="https://buymeacoffee.com/monchilin" target="_blank" rel="noopener">☕ Invítame a un café</a>
       </div>
     </div>
@@ -278,8 +323,43 @@ footer{border-top:1px solid var(--bd);padding:28px 0}
 
 <hr class="div">
 
-<section class="w">
-  <div class="daily-btn-wrap">
+<section class="w founder-section">
+  <div class="founder-wrap">
+    <div class="founder-left">
+      <div class="founder-eyebrow">Stack del fundador</div>
+      <h2 class="founder-title">Lo que uso yo cada día</h2>
+      <p class="founder-sub">No hay una IA que lo haga todo bien. Estas tres cubren el 90% de mis necesidades.</p>
+    </div>
+    <div class="founder-picks">
+      <a href="https://claude.ai" target="_blank" rel="noopener" class="fpick">
+        <div class="fpick-top">
+          <span class="fpick-ico">✦</span>
+          <span class="fpick-name">Claude</span>
+          <span class="fpick-badge">Principal</span>
+        </div>
+        <p class="fpick-desc">Para escribir, analizar, razonar y programar. El que más uso de lejos — documentos, código, ideas complejas.</p>
+      </a>
+      <a href="https://perplexity.ai" target="_blank" rel="noopener" class="fpick">
+        <div class="fpick-top">
+          <span class="fpick-ico">🔍</span>
+          <span class="fpick-name">Perplexity</span>
+          <span class="fpick-badge">Búsqueda</span>
+        </div>
+        <p class="fpick-desc">Ha reemplazado Google en mi día a día. Cada respuesta lleva las fuentes — no hay que adivinar si es verdad.</p>
+      </a>
+      <a href="https://gemini.google.com" target="_blank" rel="noopener" class="fpick">
+        <div class="fpick-top">
+          <span class="fpick-ico">◈</span>
+          <span class="fpick-name">Gemini</span>
+          <span class="fpick-badge">Google</span>
+        </div>
+        <p class="fpick-desc">Para todo lo que vive en Google Workspace — Gmail, Docs, Drive, Calendar. La integración marca la diferencia.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
     <button class="daily-btn" onclick="openDailyWiz()">
       <span class="ico">✦</span>
       <span>
@@ -588,7 +668,14 @@ function has(q, ...terms) { return terms.some(t => q.includes(t)); }
 
 // Detecta intención: ¿quiere CREAR algo desde cero o ANALIZAR algo existente?
 function isCreating(q) {
-  return has(q,'crear','crea','hacer','haz','generar','genera','construir','construye','disenar','disena','desde cero','de cero','de la nada','plantilla','automatizar','script','macro','formulas','con formulas','profesional');
+  return has(q,
+    'crear','crea','hacer','haz','generar','genera','construir','construye',
+    'disenar','disena','desde cero','de cero','de la nada',
+    'plantilla','automatizar','script','macro','formulas','con formulas',
+    'profesional','necesito','quiero','quisiera','me gustaria',
+    'para gestionar','para controlar','para llevar','para registrar',
+    'tracker','seguimiento','presupuesto','budget','planificacion'
+  );
 }
 function isAnalyzing(q) {
   return has(q,'analizar','analiza','mis datos','tengo datos','tengo un excel','mi excel','este csv','este archivo','explorar datos','entender datos','visualizar','grafico de mis','dashboard de mis');
@@ -769,19 +856,21 @@ const RULES = [
     ]}},
 
   // ── EXCEL — CREAR desde cero ────────────────────────────────────────────────
-  { match: q => has(q,'excel','spreadsheet','hoja de calculo') && isCreating(q) && !isAnalyzing(q),
-    result: { type:'recommend', summary:'Para crear Excels complejos desde cero, Claude es imbatible — genera estructuras, fórmulas y macros completas.', recommendations:[
-      {id:'claude',  rank:1, why:'Genera Excels completos desde una descripción: estructura de hojas, fórmulas complejas, formato condicional, incluso código VBA. Mucho más potente que hacerlo a mano.', tip:'Dile exactamente qué quieres: "Crea un Excel para gestionar [X] con estas columnas: [...]. Añade fórmulas para calcular [Y] y formato condicional para [Z]".'},
-      {id:'chatgpt', rank:2, why:'Con el Code Interpreter puede generar el fichero .xlsx directamente y descargarlo.', tip:'Pídele que lo cree y genere el archivo: "Crea un Excel con estas columnas y descárgalo". Necesitas ChatGPT Plus.'},
-      {id:'julius',  rank:3, why:'Si además de crearlo quieres visualizar datos y generar gráficos automáticamente.', tip:'Una vez tengas el Excel, súbelo a Julius para que genere dashboards y análisis visuales en segundos.'},
+  // Por defecto, si alguien menciona Excel sin decir "mis datos / tengo un excel",
+  // quiere CREAR algo, no analizar datos existentes.
+  { match: q => has(q,'excel','spreadsheet','hoja de calculo') && !isAnalyzing(q),
+    result: { type:'recommend', summary:'Para crear Excels desde cero, Claude es la mejor opción — genera estructura, fórmulas, macros y formato completo de una sola vez.', recommendations:[
+      {id:'claude',  rank:1, why:'Genera el Excel completo desde una descripción: hojas, fórmulas, formato condicional, tablas dinámicas, incluso VBA. Mucho más rápido que hacerlo a mano y sin errores.', tip:'Dile exactamente qué necesitas: "Crea un Excel para finanzas personales con: hoja de ingresos/gastos por categoría, hoja resumen mensual, gráfico de evolución y formato condicional para gastos que superen el presupuesto".'},
+      {id:'chatgpt', rank:2, why:'Con el Code Interpreter genera el fichero .xlsx directamente y puedes descargarlo. Útil si quieres el fichero listo sin copiar fórmulas.', tip:'Pídele que lo genere: "Crea un Excel de presupuesto mensual y descárgalo como .xlsx". Necesitas ChatGPT Plus.'},
+      {id:'julius',  rank:3, why:'Si además de crearlo quieres conectar datos y generar dashboards visuales automáticamente.', tip:'Sube el Excel que hayas creado con Claude → pídele a Julius que genere los gráficos y el análisis visual.'},
     ]}},
 
   // ── EXCEL — ANALIZAR datos existentes ────────────────────────────────────────
-  { match: q => has(q,'excel','spreadsheet','hoja de calculo','csv','datos en excel','analizar datos','mis datos','graficos','dashboard de datos','sql','base de datos') && (isAnalyzing(q) || !isCreating(q)),
+  { match: q => has(q,'excel','spreadsheet','hoja de calculo','csv','datos en excel','analizar datos','mis datos','graficos','dashboard de datos','sql','base de datos') && isAnalyzing(q),
     result: { type:'recommend', summary:'Para analizar datos con IA, Julius AI es el más directo — chatea con tu Excel sin fórmulas.', recommendations:[
       {id:'julius',  rank:1, why:'Sube tu Excel o CSV y hazle preguntas en español. Genera gráficos y análisis automáticamente sin escribir fórmulas.', tip:'Sube tu fichero → pregunta "¿Cuál es el producto más vendido por mes?" → te devuelve el gráfico listo.'},
       {id:'chatgpt', rank:2, why:'El code interpreter de ChatGPT Plus analiza ficheros, crea gráficos y escribe fórmulas complejas.', tip:'Sube tu Excel → pídele "crea un dashboard con las métricas principales" → exporta como imagen.'},
-      {id:'claude',  rank:3, why:'Para entender patrones en datos complejos y escribir fórmulas o scripts de Python/R para análisis avanzado.', tip:'Pega unas filas de ejemplo y dile qué quieres calcular — escribirá la fórmula exacta para tu caso.'},
+      {id:'claude',  rank:3, why:'Para entender patrones complejos y escribir fórmulas o scripts de Python/R para análisis avanzado.', tip:'Pega unas filas de ejemplo y dile qué quieres calcular — escribirá la fórmula exacta para tu caso.'},
     ]}},
 
   // ── CREAR DOCUMENTO / INFORME / PROPUESTA ────────────────────────────────────
